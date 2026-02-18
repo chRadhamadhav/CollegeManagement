@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:collegemanagement/Features/Admin/Screens/admin_dashboard.dart';
 
 class StudentLoginPage extends StatelessWidget {
   const StudentLoginPage({super.key});
@@ -8,7 +9,7 @@ class StudentLoginPage extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          /// Background Image
+          
           SizedBox(
             height: 360,
             width: double.infinity,
@@ -18,7 +19,7 @@ class StudentLoginPage extends StatelessWidget {
             ),
           ),
 
-          /// Gradient overlay
+          
           Container(
             height: 420,
             decoration: const BoxDecoration(
@@ -33,7 +34,8 @@ class StudentLoginPage extends StatelessWidget {
             ),
           ),
 
-          /// Login Card
+          
+          
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
@@ -49,7 +51,7 @@ class StudentLoginPage extends StatelessWidget {
             ),
           ),
 
-          /// STUDENT PORTAL Badge
+          
           Positioned(
             top: 30,
             left: 20,
@@ -177,7 +179,12 @@ class _LoginForm extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
               ),
             ),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AdminDashboard()),
+              );
+            },
             child: const Text(
               "Sign In →",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
