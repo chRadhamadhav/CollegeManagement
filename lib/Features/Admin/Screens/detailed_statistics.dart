@@ -1,5 +1,5 @@
-import 'package:college_management/Features/Admin/Widgets/admin_app_bar.dart';
-import 'package:college_management/Features/Admin/Widgets/admin_drawer.dart';
+import 'package:vidhya_sethu/Features/Admin/Widgets/admin_app_bar.dart';
+import 'package:vidhya_sethu/Features/Admin/Widgets/admin_drawer.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 

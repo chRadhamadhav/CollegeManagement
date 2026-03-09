@@ -1,13 +1,13 @@
-import 'package:college_management/Features/Admin/Models/user_model.dart';
-import 'package:college_management/Features/Admin/Widgets/admin_app_bar.dart';
-import 'package:college_management/Features/Admin/Widgets/admin_drawer.dart';
-import 'package:college_management/Features/Admin/Widgets/delete_user_dialog.dart';
-import 'package:college_management/Features/Admin/Widgets/edit_user_dialog.dart';
-import 'package:college_management/Features/Admin/Widgets/user_filter_tab.dart';
-import 'package:college_management/Features/Admin/Widgets/user_list_tile.dart';
-import 'package:college_management/Features/Admin/Widgets/user_stat_card.dart';
-import 'package:college_management/Services/user_service.dart';
-import 'package:college_management/core/constants/app_colors.dart';
+import 'package:vidhya_sethu/Features/Admin/Models/user_model.dart';
+import 'package:vidhya_sethu/Features/Admin/Widgets/admin_app_bar.dart';
+import 'package:vidhya_sethu/Features/Admin/Widgets/admin_drawer.dart';
+import 'package:vidhya_sethu/Features/Admin/Widgets/delete_user_dialog.dart';
+import 'package:vidhya_sethu/Features/Admin/Widgets/edit_user_dialog.dart';
+import 'package:vidhya_sethu/Features/Admin/Widgets/user_filter_tab.dart';
+import 'package:vidhya_sethu/Features/Admin/Widgets/user_list_tile.dart';
+import 'package:vidhya_sethu/Features/Admin/Widgets/user_stat_card.dart';
+import 'package:vidhya_sethu/Services/user_service.dart';
+import 'package:vidhya_sethu/core/constants/app_colors.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 

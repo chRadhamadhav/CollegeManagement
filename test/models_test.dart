@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:college_management/Features/Admin/Models/user_model.dart';
-import 'package:college_management/Features/Staff/Models/student.dart';
+import 'package:vidhya_sethu/Features/Admin/Models/user_model.dart';
+import 'package:vidhya_sethu/Features/Staff/Models/student.dart';
 
 void main() {
   group('Model Serialization Tests', () {

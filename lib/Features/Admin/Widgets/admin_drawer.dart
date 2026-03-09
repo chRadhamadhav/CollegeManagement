@@ -1,11 +1,11 @@
 import 'dart:ui';
-import 'package:college_management/Features/Admin/Screens/admin_dashboard.dart';
-import 'package:college_management/Features/Admin/Screens/detailed_statistics.dart';
-import 'package:college_management/Features/Admin/Screens/user_management.dart';
-import 'package:college_management/Features/Admin/Widgets/drawer_item.dart';
-import 'package:college_management/Services/user_service.dart';
-import 'package:college_management/Services/auth_service.dart';
-import 'package:college_management/Global/login.dart';
+import 'package:vidhya_sethu/Features/Admin/Screens/admin_dashboard.dart';
+import 'package:vidhya_sethu/Features/Admin/Screens/detailed_statistics.dart';
+import 'package:vidhya_sethu/Features/Admin/Screens/user_management.dart';
+import 'package:vidhya_sethu/Features/Admin/Widgets/drawer_item.dart';
+import 'package:vidhya_sethu/Services/user_service.dart';
+import 'package:vidhya_sethu/Services/auth_service.dart';
+import 'package:vidhya_sethu/Global/login.dart';
 import 'package:flutter/material.dart';
 
 /// A custom drawer widget for the Admin dashboard.

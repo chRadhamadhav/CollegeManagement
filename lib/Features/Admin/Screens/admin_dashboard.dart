@@ -1,7 +1,7 @@
-import 'package:college_management/Features/Admin/Screens/create_user.dart';
-import 'package:college_management/Features/Admin/Widgets/admin_app_bar.dart';
-import 'package:college_management/Features/Admin/Widgets/admin_drawer.dart';
-import 'package:college_management/Services/user_service.dart';
+import 'package:vidhya_sethu/Features/Admin/Screens/create_user.dart';
+import 'package:vidhya_sethu/Features/Admin/Widgets/admin_app_bar.dart';
+import 'package:vidhya_sethu/Features/Admin/Widgets/admin_drawer.dart';
+import 'package:vidhya_sethu/Services/user_service.dart';
 import 'package:flutter/material.dart';
 
 class AdminDashboard extends StatefulWidget {

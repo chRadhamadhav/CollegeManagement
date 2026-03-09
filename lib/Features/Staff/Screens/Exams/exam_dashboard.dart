@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:college_management/Features/Staff/Models/exam.dart';
-import 'package:college_management/Features/Staff/Models/subject.dart';
+import 'package:vidhya_sethu/Features/Staff/Models/exam.dart';
+import 'package:vidhya_sethu/Features/Staff/Models/subject.dart';
 import '../../Services/exam_service.dart';
 import 'mark_entry_screen.dart';
 

@@ -1,7 +1,7 @@
-import 'package:college_management/Features/Staff/Widgets/attendance_summary_item.dart';
+import 'package:vidhya_sethu/Features/Staff/Widgets/attendance_summary_item.dart';
 import 'package:flutter/material.dart';
-import 'package:college_management/Features/Staff/Models/student.dart';
-import 'package:college_management/Features/Staff/Models/subject.dart';
+import 'package:vidhya_sethu/Features/Staff/Models/student.dart';
+import 'package:vidhya_sethu/Features/Staff/Models/subject.dart';
 import '../Services/attendance_service.dart';
 
 class AttendanceScreen extends StatefulWidget {

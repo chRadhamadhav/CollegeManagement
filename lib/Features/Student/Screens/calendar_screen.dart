@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:college_management/Features/Student/Services/student_service.dart';
+import 'package:vidhya_sethu/Features/Student/Services/student_service.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});

@@ -1,5 +1,5 @@
-import 'package:college_management/Features/Admin/Models/user_model.dart';
-import 'package:college_management/Services/user_service.dart';
+import 'package:vidhya_sethu/Features/Admin/Models/user_model.dart';
+import 'package:vidhya_sethu/Services/user_service.dart';
 import 'package:flutter/material.dart';
 
 /// A themed [AlertDialog] for editing a [User]'s name, role, and category.

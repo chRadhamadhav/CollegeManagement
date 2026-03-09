@@ -1,10 +1,10 @@
-import 'package:college_management/Features/HOD/Screens/AnnouncementsScreen.dart';
-import 'package:college_management/Features/HOD/Screens/ExamSchedulesScreen.dart';
-import 'package:college_management/Features/HOD/Screens/HODDashboard.dart';
-import 'package:college_management/Features/HOD/Screens/HODProfileScreen.dart';
-import 'package:college_management/Features/HOD/Screens/OnDutyListScreen.dart';
-import 'package:college_management/core/constants/app_colors.dart';
-import 'package:college_management/core/constants/app_sizes.dart';
+import 'package:vidhya_sethu/Features/HOD/Screens/AnnouncementsScreen.dart';
+import 'package:vidhya_sethu/Features/HOD/Screens/ExamSchedulesScreen.dart';
+import 'package:vidhya_sethu/Features/HOD/Screens/HODDashboard.dart';
+import 'package:vidhya_sethu/Features/HOD/Screens/HODProfileScreen.dart';
+import 'package:vidhya_sethu/Features/HOD/Screens/OnDutyListScreen.dart';
+import 'package:vidhya_sethu/core/constants/app_colors.dart';
+import 'package:vidhya_sethu/core/constants/app_sizes.dart';
 import 'package:flutter/material.dart';
 
 /// Identifies which HOD tab is currently active.

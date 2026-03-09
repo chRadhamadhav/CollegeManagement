@@ -1,6 +1,6 @@
-import 'package:college_management/Features/Staff/Models/student.dart';
-import 'package:college_management/Features/Staff/Models/exam.dart';
-import 'package:college_management/Features/Staff/Models/exam_mark.dart';
+import 'package:vidhya_sethu/Features/Staff/Models/student.dart';
+import 'package:vidhya_sethu/Features/Staff/Models/exam.dart';
+import 'package:vidhya_sethu/Features/Staff/Models/exam_mark.dart';
 import 'package:flutter/material.dart';
 
 import '../../Services/exam_service.dart';

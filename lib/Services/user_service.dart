@@ -1,5 +1,5 @@
-import 'package:college_management/Features/Admin/Models/user_model.dart';
-import 'package:college_management/core/api/api_client.dart';
+import 'package:vidhya_sethu/Features/Admin/Models/user_model.dart';
+import 'package:vidhya_sethu/core/api/api_client.dart';
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';

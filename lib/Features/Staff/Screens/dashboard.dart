@@ -1,14 +1,14 @@
-import 'package:college_management/Features/Staff/Screens/attendance.dart';
-import 'package:college_management/Features/Staff/Screens/materials_screen.dart';
-import 'package:college_management/Features/Staff/Screens/Exams/exam_dashboard.dart';
-import 'package:college_management/Features/Staff/Screens/Assignments/assignments_dashboard.dart';
-import 'package:college_management/Features/Staff/Services/materials_service.dart';
-import 'package:college_management/Features/Staff/Services/timetable_service.dart';
-import 'package:college_management/Features/Staff/Models/material_category.dart';
-import 'package:college_management/Features/Staff/Widgets/dashboard_header.dart';
-import 'package:college_management/Features/Staff/Widgets/quick_action_card.dart';
-import 'package:college_management/Features/Staff/Widgets/today_class_card.dart';
-import 'package:college_management/Features/Staff/Services/staff_service.dart';
+import 'package:vidhya_sethu/Features/Staff/Screens/attendance.dart';
+import 'package:vidhya_sethu/Features/Staff/Screens/materials_screen.dart';
+import 'package:vidhya_sethu/Features/Staff/Screens/Exams/exam_dashboard.dart';
+import 'package:vidhya_sethu/Features/Staff/Screens/Assignments/assignments_dashboard.dart';
+import 'package:vidhya_sethu/Features/Staff/Services/materials_service.dart';
+import 'package:vidhya_sethu/Features/Staff/Services/timetable_service.dart';
+import 'package:vidhya_sethu/Features/Staff/Models/material_category.dart';
+import 'package:vidhya_sethu/Features/Staff/Widgets/dashboard_header.dart';
+import 'package:vidhya_sethu/Features/Staff/Widgets/quick_action_card.dart';
+import 'package:vidhya_sethu/Features/Staff/Widgets/today_class_card.dart';
+import 'package:vidhya_sethu/Features/Staff/Services/staff_service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 

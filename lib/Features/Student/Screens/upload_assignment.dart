@@ -1,4 +1,4 @@
-import 'package:college_management/Features/Student/Services/student_service.dart';
+import 'package:vidhya_sethu/Features/Student/Services/student_service.dart';
 import 'package:flutter/material.dart';
 
 /// Displays the student's pending and submitted assignments.

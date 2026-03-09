@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:college_management/Features/Admin/Screens/admin_dashboard.dart';
-import 'package:college_management/Features/HOD/Screens/HODDashboard.dart';
-import 'package:college_management/Features/Staff/Screens/dashboard.dart';
-import 'package:college_management/Features/Student/Screens/student_dashboard.dart';
-import 'package:college_management/Services/auth_service.dart';
+import 'package:vidhya_sethu/Features/Admin/Screens/admin_dashboard.dart';
+import 'package:vidhya_sethu/Features/HOD/Screens/HODDashboard.dart';
+import 'package:vidhya_sethu/Features/Staff/Screens/dashboard.dart';
+import 'package:vidhya_sethu/Features/Student/Screens/student_dashboard.dart';
+import 'package:vidhya_sethu/Services/auth_service.dart';
 
 class StudentLoginPage extends StatelessWidget {
   const StudentLoginPage({super.key});

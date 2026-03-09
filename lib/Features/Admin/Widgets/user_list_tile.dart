@@ -1,4 +1,4 @@
-import 'package:college_management/Features/Admin/Models/user_model.dart';
+import 'package:vidhya_sethu/Features/Admin/Models/user_model.dart';
 import 'package:flutter/material.dart';
 
 /// A card-style list row for a single [User] in User Management.

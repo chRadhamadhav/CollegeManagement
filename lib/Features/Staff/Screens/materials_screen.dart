@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:college_management/Features/Staff/Models/material_category.dart';
+import 'package:vidhya_sethu/Features/Staff/Models/material_category.dart';
 import '../Services/materials_service.dart';
 import '../Services/timetable_service.dart';
 

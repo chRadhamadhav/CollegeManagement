@@ -1,9 +1,9 @@
 import 'dart:ui';
-import 'package:college_management/Features/HOD/Widgets/hod_bottom_nav_bar.dart';
-import 'package:college_management/Features/HOD/Services/hod_service.dart';
-import 'package:college_management/Global/login.dart';
-import 'package:college_management/Services/user_service.dart';
-import 'package:college_management/Services/auth_service.dart';
+import 'package:vidhya_sethu/Features/HOD/Widgets/hod_bottom_nav_bar.dart';
+import 'package:vidhya_sethu/Features/HOD/Services/hod_service.dart';
+import 'package:vidhya_sethu/Global/login.dart';
+import 'package:vidhya_sethu/Services/user_service.dart';
+import 'package:vidhya_sethu/Services/auth_service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 

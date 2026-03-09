@@ -1,5 +1,5 @@
-import 'package:college_management/Features/HOD/Widgets/hod_bottom_nav_bar.dart';
-import 'package:college_management/Features/HOD/Services/hod_service.dart';
+import 'package:vidhya_sethu/Features/HOD/Widgets/hod_bottom_nav_bar.dart';
+import 'package:vidhya_sethu/Features/HOD/Services/hod_service.dart';
 import 'package:flutter/material.dart';
 
 class OnDutyListScreen extends StatefulWidget {

@@ -1,12 +1,12 @@
-import 'package:college_management/Features/HOD/Screens/AnnouncementsScreen.dart';
-import 'package:college_management/Features/HOD/Screens/ExamSchedulesScreen.dart';
-import 'package:college_management/Features/HOD/Screens/OnDutyListScreen.dart';
-import 'package:college_management/Features/HOD/Screens/PostResultsScreen.dart';
-import 'package:college_management/Features/HOD/Screens/TimetableScreen.dart';
-import 'package:college_management/Features/HOD/Services/hod_service.dart';
-import 'package:college_management/Features/HOD/Widgets/hod_bottom_nav_bar.dart';
-import 'package:college_management/core/constants/app_colors.dart';
-import 'package:college_management/core/constants/app_sizes.dart';
+import 'package:vidhya_sethu/Features/HOD/Screens/AnnouncementsScreen.dart';
+import 'package:vidhya_sethu/Features/HOD/Screens/ExamSchedulesScreen.dart';
+import 'package:vidhya_sethu/Features/HOD/Screens/OnDutyListScreen.dart';
+import 'package:vidhya_sethu/Features/HOD/Screens/PostResultsScreen.dart';
+import 'package:vidhya_sethu/Features/HOD/Screens/TimetableScreen.dart';
+import 'package:vidhya_sethu/Features/HOD/Services/hod_service.dart';
+import 'package:vidhya_sethu/Features/HOD/Widgets/hod_bottom_nav_bar.dart';
+import 'package:vidhya_sethu/core/constants/app_colors.dart';
+import 'package:vidhya_sethu/core/constants/app_sizes.dart';
 import 'package:flutter/material.dart';
 
 class HODDashboardScreen extends StatefulWidget {

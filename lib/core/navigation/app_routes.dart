@@ -1,10 +1,10 @@
-import 'package:college_management/Features/Admin/Screens/admin_dashboard.dart';
-import 'package:college_management/Features/Admin/Screens/detailed_statistics.dart';
-import 'package:college_management/Features/Admin/Screens/user_management.dart';
-import 'package:college_management/Features/HOD/Screens/HODDashboard.dart';
-import 'package:college_management/Features/Staff/Screens/staff_main_screen.dart';
-import 'package:college_management/Features/Student/Screens/student_dashboard.dart';
-import 'package:college_management/Global/login.dart';
+import 'package:vidhya_sethu/Features/Admin/Screens/admin_dashboard.dart';
+import 'package:vidhya_sethu/Features/Admin/Screens/detailed_statistics.dart';
+import 'package:vidhya_sethu/Features/Admin/Screens/user_management.dart';
+import 'package:vidhya_sethu/Features/HOD/Screens/HODDashboard.dart';
+import 'package:vidhya_sethu/Features/Staff/Screens/staff_main_screen.dart';
+import 'package:vidhya_sethu/Features/Student/Screens/student_dashboard.dart';
+import 'package:vidhya_sethu/Global/login.dart';
 import 'package:flutter/material.dart';
 
 /// Centralised named route definitions for the entire application.

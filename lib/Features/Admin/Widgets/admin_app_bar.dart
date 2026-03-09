@@ -1,6 +1,6 @@
-import 'package:college_management/Features/Admin/Screens/admin_profile.dart';
-import 'package:college_management/Global/theme_controller.dart';
-import 'package:college_management/Services/user_service.dart';
+import 'package:vidhya_sethu/Features/Admin/Screens/admin_profile.dart';
+import 'package:vidhya_sethu/Global/theme_controller.dart';
+import 'package:vidhya_sethu/Services/user_service.dart';
 import 'package:flutter/material.dart';
 
 class AdminAppBar extends StatefulWidget implements PreferredSizeWidget {

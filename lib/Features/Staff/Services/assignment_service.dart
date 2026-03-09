@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:college_management/Features/Staff/Models/assignment.dart';
-import 'package:college_management/Features/Staff/Models/assignment_submission.dart';
+import 'package:vidhya_sethu/Features/Staff/Models/assignment.dart';
+import 'package:vidhya_sethu/Features/Staff/Models/assignment_submission.dart';
 import '../../../core/api/api_client.dart';
 
 class AssignmentService {

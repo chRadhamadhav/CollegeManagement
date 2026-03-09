@@ -1,9 +1,9 @@
-import 'package:college_management/Features/Admin/Widgets/admin_app_bar.dart';
-import 'package:college_management/Features/Admin/Widgets/admin_profile_tile.dart';
+import 'package:vidhya_sethu/Features/Admin/Widgets/admin_app_bar.dart';
+import 'package:vidhya_sethu/Features/Admin/Widgets/admin_profile_tile.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
-import 'package:college_management/Services/user_service.dart';
+import 'package:vidhya_sethu/Services/user_service.dart';
 
 class AdminProfilePage extends StatefulWidget {
   const AdminProfilePage({super.key});

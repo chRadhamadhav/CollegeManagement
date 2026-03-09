@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:college_management/Features/Staff/Models/material_category.dart';
-import 'package:college_management/core/api/api_client.dart';
+import 'package:vidhya_sethu/Features/Staff/Models/material_category.dart';
+import 'package:vidhya_sethu/core/api/api_client.dart';
 
 class MaterialsService {
   static final MaterialsService _instance = MaterialsService._internal();

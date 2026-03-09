@@ -1,5 +1,5 @@
-import 'package:college_management/Features/HOD/Widgets/hod_bottom_nav_bar.dart';
-import 'package:college_management/core/constants/app_colors.dart';
+import 'package:vidhya_sethu/Features/HOD/Widgets/hod_bottom_nav_bar.dart';
+import 'package:vidhya_sethu/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class TimetableScreen extends StatefulWidget {

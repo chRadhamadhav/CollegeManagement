@@ -1,8 +1,8 @@
-import 'package:college_management/Features/Staff/Models/exam.dart';
-import 'package:college_management/Features/Staff/Models/exam_mark.dart';
-import 'package:college_management/Features/Staff/Models/student.dart';
-import 'package:college_management/Features/Staff/Models/subject.dart';
-import 'package:college_management/core/api/api_client.dart';
+import 'package:vidhya_sethu/Features/Staff/Models/exam.dart';
+import 'package:vidhya_sethu/Features/Staff/Models/exam_mark.dart';
+import 'package:vidhya_sethu/Features/Staff/Models/student.dart';
+import 'package:vidhya_sethu/Features/Staff/Models/subject.dart';
+import 'package:vidhya_sethu/core/api/api_client.dart';
 
 class ExamService {
   final ApiClient _apiClient = ApiClient();

@@ -1,6 +1,6 @@
-import 'package:college_management/Global/auth_wrapper.dart';
-import 'package:college_management/Global/theme_controller.dart';
-import 'package:college_management/core/navigation/app_routes.dart';
+import 'package:vidhya_sethu/Global/auth_wrapper.dart';
+import 'package:vidhya_sethu/Global/theme_controller.dart';
+import 'package:vidhya_sethu/core/navigation/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 

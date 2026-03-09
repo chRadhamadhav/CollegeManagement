@@ -1,9 +1,9 @@
-import 'package:college_management/Features/Admin/Screens/admin_dashboard.dart';
-import 'package:college_management/Features/HOD/Screens/HODDashboard.dart';
-import 'package:college_management/Features/Staff/Screens/dashboard.dart';
-import 'package:college_management/Features/Student/Screens/student_dashboard.dart';
-import 'package:college_management/Global/login.dart';
-import 'package:college_management/core/storage/secure_storage.dart';
+import 'package:vidhya_sethu/Features/Admin/Screens/admin_dashboard.dart';
+import 'package:vidhya_sethu/Features/HOD/Screens/HODDashboard.dart';
+import 'package:vidhya_sethu/Features/Staff/Screens/dashboard.dart';
+import 'package:vidhya_sethu/Features/Student/Screens/student_dashboard.dart';
+import 'package:vidhya_sethu/Global/login.dart';
+import 'package:vidhya_sethu/core/storage/secure_storage.dart';
 import 'package:flutter/material.dart';
 
 class AuthWrapper extends StatefulWidget {

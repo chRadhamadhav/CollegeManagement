@@ -1,5 +1,5 @@
-import 'package:college_management/Features/Staff/Models/assignment.dart';
-import 'package:college_management/Features/Staff/Models/assignment_submission.dart';
+import 'package:vidhya_sethu/Features/Staff/Models/assignment.dart';
+import 'package:vidhya_sethu/Features/Staff/Models/assignment_submission.dart';
 import 'package:flutter/material.dart';
 import '../../Services/assignment_service.dart';
 import 'package:intl/intl.dart';

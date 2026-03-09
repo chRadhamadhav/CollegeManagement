@@ -1,4 +1,4 @@
-import 'package:college_management/Features/Staff/Models/assignment.dart';
+import 'package:vidhya_sethu/Features/Staff/Models/assignment.dart';
 import 'package:flutter/material.dart';
 import '../../Services/assignment_service.dart';
 import 'create_assignment_screen.dart';

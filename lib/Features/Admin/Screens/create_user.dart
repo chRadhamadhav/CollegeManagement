@@ -1,5 +1,5 @@
-import 'package:college_management/Features/Admin/Widgets/admin_app_bar.dart';
-import 'package:college_management/Services/user_service.dart';
+import 'package:vidhya_sethu/Features/Admin/Widgets/admin_app_bar.dart';
+import 'package:vidhya_sethu/Services/user_service.dart';
 import 'package:flutter/material.dart';
 
 /// A page that allows administrators to create a new user (Student, Staff, or HOD).
