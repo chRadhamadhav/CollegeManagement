@@ -8,6 +8,7 @@ import 'package:college_management/Features/Admin/Widgets/user_list_tile.dart';
 import 'package:college_management/Features/Admin/Widgets/user_stat_card.dart';
 import 'package:college_management/Services/user_service.dart';
 import 'package:college_management/core/constants/app_colors.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 /// A page wrapper for the User Management feature.
@@ -85,9 +86,40 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
       builder: (_) => DeleteUserDialog(
         user: user,
         userService: _userService,
-        onDeleted: () => _loadUsers(),
+        onDeleted: () {
+          _loadUsers();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('User deleted successfully')),
+          );
+        },
       ),
     );
+  }
+
+  Future<void> _bulkUpload() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['xlsx', 'xls'],
+    );
+
+    if (result != null && result.files.single.path != null) {
+      setState(() => _isLoading = true);
+      final success = await _userService.bulkUploadUsers(result.files.single);
+
+      if (mounted) {
+        setState(() => _isLoading = false);
+        if (success) {
+          _loadUsers();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Bulk upload successful')),
+          );
+        } else {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Bulk upload failed')));
+        }
+      }
+    }
   }
 
   @override
@@ -211,6 +243,23 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                 ),
                 Row(
                   children: [
+                    ElevatedButton.icon(
+                      onPressed: _bulkUpload,
+                      icon: const Icon(Icons.file_upload_outlined, size: 18),
+                      label: const Text('Import Excel'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.adminAccentBlue.withValues(
+                          alpha: 0.1,
+                        ),
+                        foregroundColor: AppColors.adminAccentBlue,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
                     TextButton(
                       onPressed: () {},
                       child: const Text(

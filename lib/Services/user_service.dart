@@ -137,4 +137,22 @@ class UserService {
       return false;
     }
   }
+
+  Future<bool> bulkUploadUsers(PlatformFile file) async {
+    try {
+      final formData = FormData.fromMap({
+        'file': await MultipartFile.fromFile(file.path!, filename: file.name),
+      });
+
+      final response = await _apiClient.dio.post(
+        '/admin/users/bulk',
+        data: formData,
+      );
+
+      return response.statusCode == 201;
+    } catch (e) {
+      print('Error bulk uploading users: $e');
+      return false;
+    }
+  }
 }

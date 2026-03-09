@@ -19,9 +19,19 @@ class DeleteUserDialog extends StatelessWidget {
   });
 
   Future<void> _confirm(BuildContext context) async {
-    await userService.deleteUser(user.id);
-    onDeleted();
-    if (context.mounted) Navigator.pop(context);
+    final success = await userService.deleteUser(user.id);
+    if (success) {
+      onDeleted();
+      if (context.mounted) Navigator.pop(context);
+    } else {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to delete user. Please try again.'),
+          ),
+        );
+      }
+    }
   }
 
   @override
