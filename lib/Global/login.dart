@@ -105,7 +105,7 @@ class _LoginFormState extends State<LoginForm> {
       _isLoading = true;
     });
 
-    final role = await _authService.login(
+    final result = await _authService.login(
       email,
       password,
       stayLoggedIn: _stayLoggedIn,
@@ -117,10 +117,10 @@ class _LoginFormState extends State<LoginForm> {
       _isLoading = false;
     });
 
-    if (role != null) {
+    if (result.success && result.role != null) {
       // Navigate to the correct dashboard based on backend role
       Widget dashboard;
-      switch (role.toLowerCase()) {
+      switch (result.role!.toLowerCase()) {
         case 'admin':
           dashboard = const AdminDashboard();
           break;
@@ -135,7 +135,7 @@ class _LoginFormState extends State<LoginForm> {
           break;
         default:
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Unknown role assigned: $role')),
+            SnackBar(content: Text('Unknown role assigned: ${result.role}')),
           );
           return;
       }
@@ -146,8 +146,8 @@ class _LoginFormState extends State<LoginForm> {
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Invalid credentials. Please try again.'),
+        SnackBar(
+          content: Text(result.message ?? 'Login failed'),
           backgroundColor: Colors.red,
         ),
       );

@@ -482,7 +482,8 @@ class _StudentAttendanceCard extends StatelessWidget {
           // Avatar
           CircleAvatar(
             radius: 24,
-            backgroundImage: const AssetImage('assets/profile_placeholder.png'),
+            backgroundImage:
+                null, // Removed missing assets/profile_placeholder.png
             backgroundColor: Theme.of(
               context,
             ).primaryColor.withValues(alpha: 0.3),
@@ -493,7 +494,7 @@ class _StudentAttendanceCard extends StatelessWidget {
                       color: Theme.of(context).colorScheme.onPrimaryContainer,
                     ),
                   )
-                : null,
+                : const Icon(Icons.person),
           ),
           const SizedBox(width: 12),
           // Name & ID

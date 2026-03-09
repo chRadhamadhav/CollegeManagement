@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import '../core/api/api_client.dart';
 import '../core/storage/secure_storage.dart';
+import '../core/logger/app_logger.dart';
+import '../core/models/login_result.dart';
 
 /// Authentication service connecting to the FastAPI backend.
 class AuthService {
@@ -15,9 +17,8 @@ class AuthService {
 
   /// Authenticates a user with the backend using [email] and [password].
   ///
-  /// Returns the user's role if credentials are valid, otherwise returns null.
-  /// Supported Roles: 'admin', 'student', 'hod', 'staff'.
-  Future<String?> login(
+  /// Returns [LoginResult] indicating success or failure with a message.
+  Future<LoginResult> login(
     String email,
     String password, {
     bool stayLoggedIn = false,
@@ -31,7 +32,6 @@ class AuthService {
       if (response.statusCode == 200) {
         final data = response.data;
 
-        // Save tokens and user details securely
         await SecureStorage.saveTokens(
           accessToken: data['access_token'],
           refreshToken: data['refresh_token'],
@@ -40,14 +40,32 @@ class AuthService {
           stayLoggedIn: stayLoggedIn,
         );
 
-        return data['role'] as String;
+        AppLogger.info('Login successful for $email');
+        return LoginResult.success(data['role'] as String);
       }
+      return LoginResult.failure('Unexpected response from server');
     } catch (e) {
-      // Dio intercepts 401s and other API errors here
-      // Returning null means login failed (wrong credentials or deactivated)
-      return null;
+      if (e is DioException) {
+        AppLogger.error('Login failed for $email', e);
+        if (e.type == DioExceptionType.connectionTimeout ||
+            e.type == DioExceptionType.receiveTimeout ||
+            e.type == DioExceptionType.connectionError) {
+          return LoginResult.failure(
+            'Network error: Please check your internet connection',
+          );
+        }
+
+        if (e.response?.statusCode == 401) {
+          return LoginResult.failure('Invalid credentials. Please try again.');
+        }
+
+        if (e.response?.statusCode != null && e.response!.statusCode! >= 500) {
+          return LoginResult.failure('Server error. Please try again later.');
+        }
+      }
+      AppLogger.error('Unexpected login error', e);
+      return LoginResult.failure('An unexpected error occurred');
     }
-    return null;
   }
 
   /// Logs out the user by pinging the backend and then clearing all local secure storage.
