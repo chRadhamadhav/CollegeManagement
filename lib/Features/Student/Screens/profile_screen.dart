@@ -18,6 +18,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final StudentService _studentService = StudentService();
   final String _baseUrl = 'http://127.0.0.1:8000';
 
+  bool _isEditing = false;
+  bool _isSaving = false;
+
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _courseController = TextEditingController();
+  final TextEditingController _semesterController = TextEditingController();
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _courseController.dispose();
+    _semesterController.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -36,6 +55,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         setState(() {
           _profileData = data;
           _isLoading = false;
+          _nameController.text = data['full_name'] ?? '';
+          _emailController.text = data['email'] ?? '';
+          _phoneController.text = data['phone_number'] ?? '';
+          _courseController.text = data['course'] ?? '';
+          _semesterController.text = data['semester'] ?? '';
         });
       } else {
         setState(() {
@@ -214,6 +238,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Future<void> _saveProfile() async {
+    setState(() => _isSaving = true);
+    final success = await _studentService.updateStudentProfile({
+      'full_name': _nameController.text,
+      'email': _emailController.text,
+      'phone_number': _phoneController.text,
+      'course': _courseController.text,
+      'semester': _semesterController.text,
+    });
+
+    if (mounted) {
+      setState(() {
+        _isSaving = false;
+        if (success) {
+          _isEditing = false;
+          _loadProfileData(); // Refresh data
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Profile updated successfully')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to update profile')),
+          );
+        }
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -252,9 +304,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings_outlined),
-            onPressed: () {},
+            icon: Icon(_isEditing ? Icons.close : Icons.edit_outlined),
+            onPressed: () {
+              setState(() {
+                if (_isEditing) {
+                  // Reset controllers to original data
+                  _nameController.text = _profileData?['full_name'] ?? '';
+                  _emailController.text = _profileData?['email'] ?? '';
+                  _phoneController.text = _profileData?['phone_number'] ?? '';
+                  _courseController.text = _profileData?['course'] ?? '';
+                  _semesterController.text = _profileData?['semester'] ?? '';
+                }
+                _isEditing = !_isEditing;
+              });
+            },
           ),
+          if (_isEditing)
+            IconButton(
+              icon: _isSaving
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.blue,
+                      ),
+                    )
+                  : const Icon(Icons.check, color: Colors.blue),
+              onPressed: _isSaving ? null : _saveProfile,
+            ),
         ],
       ),
       body: SingleChildScrollView(
@@ -327,19 +405,68 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  Text(
-                    name,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
+                  _isEditing
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 40),
+                          child: TextField(
+                            controller: _nameController,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            decoration: const InputDecoration(
+                              hintText: 'Full Name',
+                              contentPadding: EdgeInsets.zero,
+                              isDense: true,
+                            ),
+                          ),
+                        )
+                      : Text(
+                          name,
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
                   const SizedBox(height: 4),
-                  Text(
-                    "${_profileData?['course'] ?? 'Course Not Set'} | Sem ${_profileData?['semester'] ?? 'N/A'}",
-                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                  ),
+                  _isEditing
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 100,
+                              child: TextField(
+                                controller: _courseController,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(fontSize: 14),
+                                decoration: const InputDecoration(
+                                  hintText: 'Course',
+                                ),
+                              ),
+                            ),
+                            const Text(' | Sem '),
+                            SizedBox(
+                              width: 50,
+                              child: TextField(
+                                controller: _semesterController,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(fontSize: 14),
+                                decoration: const InputDecoration(
+                                  hintText: 'Sem',
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      : Text(
+                          "${_profileData?['course'] ?? 'Course Not Set'} | Sem ${_profileData?['semester'] ?? 'N/A'}",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                          ),
+                        ),
                   const SizedBox(height: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(
@@ -404,11 +531,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Icons.email_outlined,
                         "Email",
                         _profileData?['email'] ?? 'Not set',
+                        controller: _emailController,
+                        isEditable: true,
                       ),
                       _buildInfoRow(
                         Icons.phone_outlined,
                         "Phone",
                         _profileData?['phone_number'] ?? 'Not set',
+                        controller: _phoneController,
+                        isEditable: true,
                       ),
                       _buildInfoRow(
                         Icons.location_on_outlined,
@@ -502,7 +633,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String label, String value) {
+  Widget _buildInfoRow(
+    IconData icon,
+    String label,
+    String value, {
+    TextEditingController? controller,
+    bool isEditable = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Row(
@@ -519,14 +656,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   style: TextStyle(fontSize: 13, color: Colors.grey[500]),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  value,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    color: Colors.black87,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+                _isEditing && isEditable && controller != null
+                    ? TextField(
+                        controller: controller,
+                        style: const TextStyle(fontSize: 15),
+                        decoration: const InputDecoration(
+                          isDense: true,
+                          contentPadding: EdgeInsets.symmetric(vertical: 8),
+                        ),
+                      )
+                    : Text(
+                        value,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          color: Colors.black87,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
               ],
             ),
           ),

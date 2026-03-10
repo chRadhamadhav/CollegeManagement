@@ -31,6 +31,17 @@ class StudentService {
     return null;
   }
 
+  /// Updates the profile details of the currently logged-in student.
+  Future<bool> updateStudentProfile(Map<String, dynamic> data) async {
+    try {
+      final response = await _dio.put('student/profile/', data: data);
+      return response.statusCode == 200;
+    } catch (e) {
+      AppLogger.error('updateStudentProfile ERROR', e);
+      return false;
+    }
+  }
+
   /// Fetches the dashboard statistics of the currently logged-in student.
   Future<Map<String, dynamic>?> getStudentDashboard() async {
     try {
