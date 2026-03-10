@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:vidhya_sethu/Features/Staff/Models/assignment.dart';
 import 'package:vidhya_sethu/Features/Staff/Models/assignment_submission.dart';
 import '../../../core/api/api_client.dart';
+import '../../../core/logger/app_logger.dart';
 
 class AssignmentService {
   static final AssignmentService _instance = AssignmentService._internal();
@@ -14,25 +15,39 @@ class AssignmentService {
   /// Endpoint: GET /api/v1/student/assignments or /api/v1/staff/assignments
   Future<List<Assignment>> fetchAssignments({bool isStaff = false}) async {
     try {
-      final endpoint = isStaff ? '/staff/assignments' : '/student/assignments';
+      final endpoint = isStaff ? 'staff/assignments/' : 'student/assignments/';
       final response = await _dio.get(endpoint);
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data;
-        return data
-            .map(
-              (e) => Assignment(
-                id: e['id'],
-                title: e['title'],
-                description: e['description'] ?? '',
-                dueDate: DateTime.parse(e['due_date']),
-                course: e['course'],
-                createdAt: DateTime.parse(e['created_at']),
-              ),
-            )
-            .toList();
+        return data.map((e) {
+          // Backend might send 'target_course' as 'course' or 'target_course'
+          // UI expects 'course'
+          final courseName = e['target_course'] ?? e['course'] ?? '';
+
+          // Description might be null in top-level but present in topics[0]
+          String description = e['description'] ?? '';
+          if (description.isEmpty &&
+              e['topics'] != null &&
+              (e['topics'] as List).isNotEmpty) {
+            description = e['topics'][0]['description'] ?? '';
+          }
+
+          return Assignment(
+            id: e['id'],
+            title: e['title'],
+            description: description,
+            dueDate: DateTime.parse(e['due_date']),
+            course: courseName,
+            subjectId: e['subject_id'] ?? '',
+            maxMarks: e['max_marks'] ?? 100,
+            createdAt: DateTime.parse(
+              e['created_at'] ?? DateTime.now().toIso8601String(),
+            ),
+          );
+        }).toList();
       }
     } catch (e) {
-      // Return empty list on failure for now
+      AppLogger.error('fetchAssignments ERROR', e);
     }
     return [];
   }
@@ -42,16 +57,21 @@ class AssignmentService {
   Future<bool> createAssignment(Assignment assignment) async {
     try {
       final response = await _dio.post(
-        '/staff/assignments',
+        'staff/assignments/',
         data: {
           'title': assignment.title,
-          'description': assignment.description,
+          'subject_id': assignment.subjectId,
+          'target_course': assignment.course,
           'due_date': assignment.dueDate.toIso8601String(),
-          'course': assignment.course,
+          'max_marks': assignment.maxMarks,
+          'topics': [
+            {'title': 'General', 'description': assignment.description},
+          ],
         },
       );
       return response.statusCode == 200 || response.statusCode == 201;
     } catch (e) {
+      AppLogger.error('createAssignment ERROR', e);
       return false;
     }
   }
@@ -60,9 +80,10 @@ class AssignmentService {
   /// Endpoint: DELETE /api/v1/staff/assignments/{assignmentId}
   Future<bool> deleteAssignment(String assignmentId) async {
     try {
-      final response = await _dio.delete('/staff/assignments/$assignmentId');
+      final response = await _dio.delete('staff/assignments/$assignmentId/');
       return response.statusCode == 200;
     } catch (e) {
+      AppLogger.error('deleteAssignment ERROR for ID: $assignmentId', e);
       return false;
     }
   }
@@ -74,7 +95,7 @@ class AssignmentService {
   ) async {
     try {
       final response = await _dio.get(
-        '/staff/assignments/$assignmentId/submissions',
+        'staff/assignments/$assignmentId/submissions/',
       );
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data;
@@ -94,7 +115,10 @@ class AssignmentService {
             .toList();
       }
     } catch (e) {
-      //
+      AppLogger.error(
+        'getSubmissionsForAssignment ERROR for ID: $assignmentId',
+        e,
+      );
     }
     return [];
   }
@@ -103,16 +127,19 @@ class AssignmentService {
   /// Endpoint: POST /api/v1/student/assignments/{assignmentId}/submit
   Future<bool> submitAssignment(String assignmentId, String filePath) async {
     try {
-      // In a real scenario, this would involve sending form-data with the file.
-      // For this migration, assuming basic POST due to file complexity handling missing at backend right now.
+      final file = await MultipartFile.fromFile(
+        filePath,
+        filename: filePath.split('/').last,
+      );
+      final formData = FormData.fromMap({'file': file});
+
       final response = await _dio.post(
-        '/student/assignments/$assignmentId/submit',
-        data: {
-          'file_path': filePath, // Simulation
-        },
+        'student/assignments/$assignmentId/submit',
+        data: formData,
       );
       return response.statusCode == 200 || response.statusCode == 201;
     } catch (e) {
+      AppLogger.error('submitAssignment ERROR for ID: $assignmentId', e);
       return false;
     }
   }
@@ -125,12 +152,13 @@ class AssignmentService {
     String feedback,
   ) async {
     try {
-      final response = await _dio.post(
-        '/staff/assignments/submissions/$submissionId/grade',
+      final response = await _dio.put(
+        'staff/submissions/$submissionId/grade/',
         data: {'marks': marks, 'feedback': feedback},
       );
       return response.statusCode == 200;
     } catch (e) {
+      AppLogger.error('gradeSubmission ERROR for ID: $submissionId', e);
       return false;
     }
   }

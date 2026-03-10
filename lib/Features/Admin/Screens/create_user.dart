@@ -82,10 +82,10 @@ class NewUserPageState extends State<NewUserPage> {
           .trim(); // Mapping employee ID/Title to designation
     }
 
-    final isSuccess = await _userService.addUser(data);
+    final errorMessage = await _userService.addUser(data);
 
     if (mounted) {
-      if (isSuccess) {
+      if (errorMessage == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -95,11 +95,9 @@ class NewUserPageState extends State<NewUserPage> {
         );
         Navigator.pop(context, true); // return true to refresh
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to create user. User may already exist.'),
-          ),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(errorMessage)));
       }
     }
   }

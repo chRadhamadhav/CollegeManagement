@@ -25,7 +25,7 @@ class AuthService {
   }) async {
     try {
       final response = await _dio.post(
-        '/auth/login',
+        'auth/login/',
         data: {'email': email, 'password': password},
       );
 
@@ -71,7 +71,7 @@ class AuthService {
   /// Logs out the user by pinging the backend and then clearing all local secure storage.
   Future<void> logout() async {
     try {
-      await _dio.post('/auth/logout');
+      await _dio.post('auth/logout/');
     } catch (e) {
       // Even if the network request fails (e.g. no internet, or token already expired),
       // we still want to proceed with clearing local storage to force the user out.

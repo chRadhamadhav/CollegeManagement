@@ -3,8 +3,10 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:vidhya_sethu/Features/Staff/Models/material_category.dart';
+import 'package:vidhya_sethu/core/logger/app_logger.dart';
 import '../Services/materials_service.dart';
-import '../Services/timetable_service.dart';
+import '../Services/attendance_service.dart';
+import '../Models/subject.dart';
 
 class MaterialsScreen extends StatefulWidget {
   const MaterialsScreen({super.key});
@@ -15,10 +17,10 @@ class MaterialsScreen extends StatefulWidget {
 
 class _MaterialsScreenState extends State<MaterialsScreen> {
   final MaterialsService _materialsService = MaterialsService();
-  final TimetableService _timetableService = TimetableService();
+  final AttendanceService _attendanceService = AttendanceService();
   String? _selectedCategoryId;
-  String? _selectedCourse;
-  List<String> _courses = [];
+  String? _selectedSubjectId;
+  List<Subject> _subjects = [];
   List<MaterialCategory> _categories = [];
   bool _isLoading = true;
 
@@ -29,15 +31,15 @@ class _MaterialsScreenState extends State<MaterialsScreen> {
   }
 
   Future<void> _loadInitialData() async {
-    final courses = await _timetableService.fetchCourses();
+    final subjects = await _attendanceService.getSubjects();
     if (mounted) {
       setState(() {
-        _courses = courses;
-        if (courses.isNotEmpty) {
-          _selectedCourse = courses.first;
+        _subjects = subjects;
+        if (subjects.isNotEmpty) {
+          _selectedSubjectId = subjects.first.id;
         }
       });
-      if (_selectedCourse != null) {
+      if (_selectedSubjectId != null) {
         await _loadCategories();
       } else {
         setState(() => _isLoading = false);
@@ -46,21 +48,32 @@ class _MaterialsScreenState extends State<MaterialsScreen> {
   }
 
   Future<void> _loadCategories() async {
+    if (_selectedSubjectId == null) return;
+    AppLogger.debug('Loading categories for subject: $_selectedSubjectId');
     setState(() => _isLoading = true);
-    final cats = await _materialsService.getCategories(_selectedCourse!);
+    final cats = await _materialsService.getCategories(_selectedSubjectId!);
     if (mounted) {
       setState(() {
         _categories = cats;
         _isLoading = false;
 
-        // Reset category selection when course changes
+        AppLogger.debug('Categories loaded: ${cats.length}');
+        for (var c in cats) {
+          AppLogger.debug('Category: ${c.name} (ID: ${c.id})');
+        }
+
+        // Keep existing selection if it still exists, otherwise pick first
         if (cats.isNotEmpty) {
           bool exists = cats.any((c) => c.id == _selectedCategoryId);
           if (!exists) {
             _selectedCategoryId = cats.first.id;
+            AppLogger.debug('Selected first category: $_selectedCategoryId');
+          } else {
+            AppLogger.debug('Keeping existing category: $_selectedCategoryId');
           }
         } else {
           _selectedCategoryId = null;
+          AppLogger.debug('No categories available, setting selection to null');
         }
       });
     }
@@ -74,25 +87,26 @@ class _MaterialsScreenState extends State<MaterialsScreen> {
           ? const Center(child: CircularProgressIndicator())
           : Column(
               children: [
-                if (_courses.isNotEmpty)
+                if (_subjects.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: DropdownButtonFormField<String>(
-                      value: _selectedCourse,
+                      value: _selectedSubjectId,
                       decoration: const InputDecoration(
-                        labelText: 'Course / Subject',
+                        labelText: 'Subject',
                         border: OutlineInputBorder(),
                       ),
-                      items: _courses.map((String course) {
+                      items: _subjects.map((Subject subject) {
                         return DropdownMenuItem<String>(
-                          value: course,
-                          child: Text(course),
+                          value: subject.id,
+                          child: Text(subject.name),
                         );
                       }).toList(),
                       onChanged: (String? newValue) {
-                        if (newValue != null && newValue != _selectedCourse) {
+                        if (newValue != null &&
+                            newValue != _selectedSubjectId) {
                           setState(() {
-                            _selectedCourse = newValue;
+                            _selectedSubjectId = newValue;
                           });
                           _loadCategories();
                         }
@@ -229,13 +243,25 @@ class _MaterialsScreenState extends State<MaterialsScreen> {
         children: [
           FloatingActionButton.small(
             heroTag: 'add_category',
-            onPressed: _selectedCourse != null ? _showAddCategoryDialog : null,
+            onPressed: _selectedSubjectId != null
+                ? _showAddCategoryDialog
+                : null,
             child: const Icon(Icons.create_new_folder),
           ),
           const SizedBox(height: 16),
           FloatingActionButton(
             heroTag: 'add_material',
-            onPressed: _selectedCategoryId != null ? _uploadMaterial : null,
+            onPressed: () {
+              if (_selectedCategoryId != null) {
+                _uploadMaterial();
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Please select or create a category first'),
+                  ),
+                );
+              }
+            },
             child: const Icon(Icons.upload_file),
           ),
         ],
@@ -263,14 +289,23 @@ class _MaterialsScreenState extends State<MaterialsScreen> {
           ),
           FilledButton(
             onPressed: () async {
-              if (controller.text.isNotEmpty && _selectedCourse != null) {
+              if (controller.text.isNotEmpty && _selectedSubjectId != null) {
                 final success = await _materialsService.addCategory(
                   controller.text,
-                  _selectedCourse!,
+                  _selectedSubjectId!,
                 );
                 if (mounted) {
                   Navigator.pop(context);
-                  if (success) _loadCategories();
+                  if (success) {
+                    _loadCategories();
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Failed to create category. Check logs.'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
                 }
               }
             },
@@ -282,7 +317,9 @@ class _MaterialsScreenState extends State<MaterialsScreen> {
   }
 
   Future<void> _uploadMaterial() async {
+    AppLogger.debug('FAB Upload pressed. Category ID: $_selectedCategoryId');
     if (_selectedCategoryId == null) {
+      AppLogger.warn('Cannot upload: No category selected');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please select or create a category first'),
@@ -291,21 +328,32 @@ class _MaterialsScreenState extends State<MaterialsScreen> {
       return;
     }
 
-    final result = await FilePicker.platform.pickFiles();
-    if (result != null && result.files.single.path != null) {
-      final success = await _materialsService.addMaterial(
-        filePath: result.files.single.path!,
-        fileName: result.files.single.name,
-        categoryId: _selectedCategoryId!,
-      );
-      if (success) {
-        _loadCategories();
-        if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Upload successful')));
+    try {
+      AppLogger.debug('Opening FilePicker...');
+      final result = await FilePicker.platform.pickFiles();
+      if (result != null && result.files.single.path != null) {
+        AppLogger.debug('File picked: ${result.files.single.name}');
+        final success = await _materialsService.addMaterial(
+          filePath: result.files.single.path!,
+          fileName: result.files.single.name,
+          categoryId: _selectedCategoryId!,
+        );
+        if (success) {
+          AppLogger.info('Material upload successful');
+          _loadCategories();
+          if (mounted) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(const SnackBar(content: Text('Upload successful')));
+          }
+        } else {
+          AppLogger.error('Material upload failed (service returned false)');
         }
+      } else {
+        AppLogger.debug('FilePicker cancelled or null path');
       }
+    } catch (e) {
+      AppLogger.error('Error in _uploadMaterial', e);
     }
   }
 }

@@ -1,7 +1,10 @@
 import 'package:vidhya_sethu/Features/HOD/Screens/HODDashboard.dart';
 import 'package:vidhya_sethu/Features/HOD/Widgets/hod_bottom_nav_bar.dart';
+import 'package:vidhya_sethu/Features/HOD/Services/hod_service.dart';
 import 'package:vidhya_sethu/core/constants/app_colors.dart';
+import 'package:vidhya_sethu/core/logger/app_logger.dart';
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 class PostResultsScreen extends StatefulWidget {
   const PostResultsScreen({super.key});
@@ -11,11 +14,15 @@ class PostResultsScreen extends StatefulWidget {
 }
 
 class _PostResultsScreenState extends State<PostResultsScreen> {
+  final HODService _hodService = HODService();
+
   // ── Dropdown states ──
   String _semester = 'Semester 5';
   String _type = 'Internal 1';
-  String _subject = 'Data Structures & Algorithms';
-  bool _isCsvSelected = true;
+  String? _selectedSubjectId;
+  String? _selectedSubjectName;
+  bool _isCsvSelected = false;
+  bool _isLoading = true;
 
   final List<String> _semesters = [
     'Semester 1',
@@ -33,54 +40,180 @@ class _PostResultsScreenState extends State<PostResultsScreen> {
     'Internal 3',
     'External',
   ];
-  final List<String> _subjects = [
-    'Data Structures & Algorithms',
-    'Operating Systems',
-    'DBMS',
-    'Computer Networks',
-    'Machine Learning',
-  ];
 
-  // ── Student data with marks controllers ──
-  final List<Map<String, dynamic>> _students = [
-    {
-      'name': 'Aditya Sharma',
-      'roll': 'CS-2021-042',
-      'avatarBg': const Color(0xFF1A2B2A),
-      'iconColor': const Color(0xFF7ECFB3),
-      'initials': null,
-      'controller': TextEditingController(text: '98'),
-    },
-    {
-      'name': 'Priya Patel',
-      'roll': 'CS-2021-089',
-      'avatarBg': const Color(0xFF2A1A2B),
-      'iconColor': const Color(0xFFCF7EBF),
-      'initials': null,
-      'controller': TextEditingController(text: '95'),
-    },
-    {
-      'name': 'Rahul Verma',
-      'roll': 'CS-2021-015',
-      'avatarBg': const Color(0xFF2A221A),
-      'iconColor': const Color(0xFFCFAA7E),
-      'initials': null,
-      'controller': TextEditingController(text: '00'),
-    },
-    {
-      'name': 'Sana Khan',
-      'roll': 'CS-2021-022',
-      'avatarBg': const Color(0xFF2A2A2A),
-      'iconColor': Colors.white70,
-      'initials': 'SK',
-      'controller': TextEditingController(text: '00'),
-    },
-  ];
+  List<Map<String, dynamic>> _allSubjects = [];
+  List<Map<String, dynamic>> _allExams = [];
+  List<Map<String, dynamic>> _students = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadInitialData();
+  }
+
+  Future<void> _loadInitialData() async {
+    setState(() => _isLoading = true);
+    try {
+      final results = await Future.wait([
+        _hodService.getSubjects(),
+        _hodService.getExams(),
+        _hodService.getStudents(),
+      ]);
+
+      _allSubjects = results[0] ?? [];
+      _allExams = results[1] ?? [];
+      final studentList = results[2] ?? [];
+
+      if (_allSubjects.isNotEmpty) {
+        _selectedSubjectId = _allSubjects.first['id'];
+        _selectedSubjectName = _allSubjects.first['name'];
+      }
+
+      // Initialize controllers for students with colors
+      _students = studentList.map((s) {
+        final int colorIndex = (s['name']?.length ?? 0) % 5;
+        final List<Color> bgColors = [
+          const Color(0xFF1A2B2A),
+          const Color(0xFF2A1A2B),
+          const Color(0xFF2A221A),
+          const Color(0xFF2A2A2A),
+          const Color(0xFF1A252B),
+        ];
+        final List<Color> iconColors = [
+          const Color(0xFF7ECFB3),
+          const Color(0xFFCF7EBF),
+          const Color(0xFFCFAA7E),
+          Colors.white70,
+          const Color(0xFF7EACCF),
+        ];
+
+        return {
+          ...s,
+          'controller': TextEditingController(text: '00'),
+          'initials': _getInitials(s['name'] ?? 'S'),
+          'avatarBg': bgColors[colorIndex],
+          'iconColor': iconColors[colorIndex],
+          'roll': s['roll_number'] ?? 'N/A',
+        };
+      }).toList();
+
+      await _loadExistingMarks();
+    } catch (e) {
+      AppLogger.error('Error loading initial data', e);
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  String _getInitials(String name) {
+    List<String> parts = name.split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.substring(0, min(2, name.length)).toUpperCase();
+  }
+
+  Future<void> _loadExistingMarks() async {
+    if (_selectedSubjectId == null) return;
+
+    // Find if an exam exists for this subject and type
+    final exam = _allExams.firstWhere(
+      (e) =>
+          e['subject_id'] == _selectedSubjectId &&
+          e['name'].toString().toLowerCase() == _type.toLowerCase(),
+      orElse: () => {},
+    );
+
+    if (exam.isNotEmpty) {
+      final marks = await _hodService.getExamMarks(exam['id']);
+      if (marks != null) {
+        setState(() {
+          for (var student in _students) {
+            final mark = marks.firstWhere(
+              (m) => m['student_id'] == student['id'],
+              orElse: () => {},
+            );
+            if (mark.isNotEmpty) {
+              (student['controller'] as TextEditingController).text =
+                  mark['marks_obtained'].toString().split('.')[0];
+            } else {
+              (student['controller'] as TextEditingController).text = '00';
+            }
+          }
+        });
+      }
+    } else {
+      // Clear marks if no exam found
+      setState(() {
+        for (var student in _students) {
+          (student['controller'] as TextEditingController).text = '00';
+        }
+      });
+    }
+  }
+
+  Future<void> _submitResults() async {
+    if (_selectedSubjectId == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please select a subject')));
+      return;
+    }
+
+    final exam = _allExams.firstWhere(
+      (e) =>
+          e['subject_id'] == _selectedSubjectId &&
+          e['name'].toString().toLowerCase() == _type.toLowerCase(),
+      orElse: () => {},
+    );
+
+    if (exam.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'No exam found for this subject and type. Create one in Schedules.',
+          ),
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    final List<Map<String, dynamic>> marksToSubmit = _students.map((s) {
+      final controller = s['controller'] as TextEditingController;
+      double score = double.tryParse(controller.text) ?? 0.0;
+      return {
+        'student_id': s['id'],
+        'marks_obtained': score,
+        'is_absent': score == 0 && controller.text != '0', // Optional logic
+      };
+    }).toList();
+
+    final success = await _hodService.postExamResults(
+      exam['id'],
+      marksToSubmit,
+    );
+
+    if (mounted) {
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            success ? 'Results posted successfully!' : 'Failed to post results',
+          ),
+          backgroundColor: success ? Colors.green : Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   void dispose() {
     for (final s in _students) {
-      (s['controller'] as TextEditingController).dispose();
+      if (s['controller'] != null) {
+        (s['controller'] as TextEditingController).dispose();
+      }
     }
     super.dispose();
   }
@@ -165,7 +298,10 @@ class _PostResultsScreenState extends State<PostResultsScreen> {
                           label: 'TYPE',
                           value: _type,
                           items: _types,
-                          onChanged: (v) => setState(() => _type = v!),
+                          onChanged: (v) {
+                            setState(() => _type = v!);
+                            _loadExistingMarks();
+                          },
                         ),
                       ),
                     ],
@@ -173,12 +309,24 @@ class _PostResultsScreenState extends State<PostResultsScreen> {
                   const SizedBox(height: 16),
 
                   // ── Subject Dropdown (full width) ──
-                  _LabeledDropdown(
-                    label: 'SUBJECT',
-                    value: _subject,
-                    items: _subjects,
-                    onChanged: (v) => setState(() => _subject = v!),
-                  ),
+                  if (_allSubjects.isNotEmpty)
+                    _LabeledDropdown(
+                      label: 'SUBJECT',
+                      value: _selectedSubjectName ?? '',
+                      items: _allSubjects
+                          .map((s) => s['name'] as String)
+                          .toList(),
+                      onChanged: (v) {
+                        final sub = _allSubjects.firstWhere(
+                          (s) => s['name'] == v,
+                        );
+                        setState(() {
+                          _selectedSubjectName = v;
+                          _selectedSubjectId = sub['id'];
+                        });
+                        _loadExistingMarks();
+                      },
+                    ),
                   const SizedBox(height: 20),
 
                   // ── Upload CSV / Manual Entry Toggle ──
@@ -222,7 +370,7 @@ class _PostResultsScreenState extends State<PostResultsScreen> {
                         ),
                       ),
                       Text(
-                        '64 Students',
+                        '${_students.length} Students',
                         style: TextStyle(
                           color: Colors.blue[400],
                           fontSize: 13,
@@ -253,7 +401,7 @@ class _PostResultsScreenState extends State<PostResultsScreen> {
               width: double.infinity,
               height: 56,
               child: ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: _isLoading ? null : _submitResults,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.hodAccentBlue,
                   shape: RoundedRectangleBorder(
@@ -261,14 +409,23 @@ class _PostResultsScreenState extends State<PostResultsScreen> {
                   ),
                   elevation: 0,
                 ),
-                icon: const Icon(
-                  Icons.upload_rounded,
-                  color: Colors.white,
-                  size: 22,
-                ),
-                label: const Text(
-                  'Post Results',
-                  style: TextStyle(
+                icon: _isLoading
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : const Icon(
+                        Icons.upload_rounded,
+                        color: Colors.white,
+                        size: 22,
+                      ),
+                label: Text(
+                  _isLoading ? 'Processing...' : 'Post Results',
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,

@@ -1,6 +1,7 @@
 import 'package:vidhya_sethu/Features/HOD/Widgets/hod_bottom_nav_bar.dart';
 import 'package:vidhya_sethu/Features/HOD/Services/hod_service.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class OnDutyListScreen extends StatefulWidget {
   const OnDutyListScreen({super.key});
@@ -15,23 +16,31 @@ class _OnDutyListScreenState extends State<OnDutyListScreen> {
   int _selectedDay = 0;
 
   List<Map<String, dynamic>> _assignments = [];
-
-  static const List<Map<String, String>> _days = [
-    {'label': 'TODAY', 'date': '12'},
-    {'label': 'TUE', 'date': '13'},
-    {'label': 'WED', 'date': '14'},
-    {'label': 'THU', 'date': '15'},
-    {'label': 'FRI', 'date': '16'},
-  ];
+  final List<Map<String, String>> _days = [];
 
   @override
   void initState() {
     super.initState();
+    _generateDays();
     _loadDutyList();
+  }
+
+  void _generateDays() {
+    final now = DateTime.now();
+    for (int i = 0; i < 7; i++) {
+      final day = now.add(Duration(days: i));
+      _days.add({
+        'label': i == 0 ? 'TODAY' : DateFormat('EEE').format(day).toUpperCase(),
+        'date': day.day.toString(),
+        'full': DateFormat('yyyy-MM-dd').format(day),
+      });
+    }
   }
 
   Future<void> _loadDutyList() async {
     setState(() => _isLoading = true);
+    // Note: In a real app, we might pass the selected date to filter.
+    // For now, the backend returns 'today' by default or mock data.
     final data = await _hodService.getFacultyDuty();
     if (mounted) {
       setState(() {
@@ -166,7 +175,12 @@ class _OnDutyListScreenState extends State<OnDutyListScreen> {
           final bool active = i == _selectedDay;
           final day = _days[i];
           return GestureDetector(
-            onTap: () => setState(() => _selectedDay = i),
+            onTap: () {
+              if (_selectedDay != i) {
+                setState(() => _selectedDay = i);
+                _loadDutyList();
+              }
+            },
             child: Container(
               width: 66,
               margin: const EdgeInsets.only(right: 10),

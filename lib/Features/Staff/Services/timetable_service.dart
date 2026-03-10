@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import '../../../core/api/api_client.dart';
+import '../../../core/logger/app_logger.dart';
 
 class TimetableService {
   static final TimetableService _instance = TimetableService._internal();
@@ -13,13 +14,13 @@ class TimetableService {
   // Returns: {"slots": [{"id": ..., "day_of_week": ..., "start_time": ..., "end_time": ..., "subject_name": ..., "room": ...}]}
   Future<List<Map<String, dynamic>>> fetchTimetable() async {
     try {
-      final response = await _dio.get('/student/timetable');
+      final response = await _dio.get('student/timetable/');
       if (response.statusCode == 200) {
         final List<dynamic> slots = response.data['slots'];
         return slots.map((e) => e as Map<String, dynamic>).toList();
       }
     } catch (e) {
-      // Return empty list on failure for now
+      AppLogger.error('fetchTimetable ERROR', e);
     }
     return [];
   }

@@ -1,3 +1,4 @@
+import 'package:vidhya_sethu/Features/HOD/Services/hod_service.dart';
 import 'package:vidhya_sethu/Features/HOD/Widgets/hod_bottom_nav_bar.dart';
 import 'package:vidhya_sethu/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -10,72 +11,38 @@ class TimetableScreen extends StatefulWidget {
 }
 
 class _TimetableScreenState extends State<TimetableScreen> {
-  int _selectedDay = 0; // MON = 0 (active)
+  final HODService _hodService = HODService();
+  bool _isLoading = true;
+  int _selectedDay = 0; // MON = 0
+  List<Map<String, dynamic>> _slots = [];
 
   static const List<Map<String, String>> _days = [
-    {'label': 'MON', 'date': '12'},
-    {'label': 'TUE', 'date': '13'},
-    {'label': 'WED', 'date': '14'},
-    {'label': 'THU', 'date': '15'},
-    {'label': 'FRI', 'date': '16'},
-    {'label': 'SAT', 'date': '17'},
-    {'label': 'SUN', 'date': '18'},
+    {'label': 'MON', 'api': 'MONDAY', 'date': '12'},
+    {'label': 'TUE', 'api': 'TUESDAY', 'date': '13'},
+    {'label': 'WED', 'api': 'WEDNESDAY', 'date': '14'},
+    {'label': 'THU', 'api': 'THURSDAY', 'date': '15'},
+    {'label': 'FRI', 'api': 'FRIDAY', 'date': '16'},
+    {'label': 'SAT', 'api': 'SATURDAY', 'date': '17'},
   ];
 
-  static const List<Map<String, dynamic>> _slots = [
-    {
-      'time': '09:00',
-      'title': 'Advanced Algorithms',
-      'badge': 'LECTURE',
-      'badgeColor': Color(0xFF1A3A6A),
-      'badgeBorder': Color(0xFF2A5AA0),
-      'badgeTextColor': Color(0xFF4DB6FF),
-      'teacher': 'Dr. Sarah Smith',
-      'location': 'Room 402 • Block C',
-      'locationIcon': Icons.location_on_outlined,
-      'isCurrent': false,
-      'attendance': null,
-    },
-    {
-      'time': '10:30',
-      'title': 'Data Structures Lab',
-      'badge': 'LAB\nSESSION',
-      'badgeColor': Color(0xFF3A2500),
-      'badgeBorder': Color(0xFF7A4B00),
-      'badgeTextColor': Color(0xFFFFB74D),
-      'teacher': 'Prof. James Bond',
-      'location': 'Lab 02 • CS Wing',
-      'locationIcon': Icons.science_outlined,
-      'isCurrent': true,
-      'attendance': '42/45 Students',
-    },
-    {
-      'time': '01:30',
-      'title': 'Machine Learning',
-      'badge': 'LECTURE',
-      'badgeColor': Color(0xFF1D2230),
-      'badgeBorder': Color(0xFF2A3450),
-      'badgeTextColor': Color(0xFF8899BB),
-      'teacher': 'Dr. Emily Watson',
-      'location': 'Room 205 • Main Bldg',
-      'locationIcon': Icons.location_on_outlined,
-      'isCurrent': false,
-      'attendance': null,
-    },
-    {
-      'time': '03:00',
-      'title': 'Network Security',
-      'badge': 'SEMINAR',
-      'badgeColor': Color(0xFF1D2230),
-      'badgeBorder': Color(0xFF2A3450),
-      'badgeTextColor': Color(0xFF8899BB),
-      'teacher': 'Prof. Alan Turing',
-      'location': 'Auditorium II',
-      'locationIcon': Icons.location_on_outlined,
-      'isCurrent': false,
-      'attendance': null,
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _loadTimetable();
+  }
+
+  Future<void> _loadTimetable() async {
+    setState(() => _isLoading = true);
+    final dayApi = _days[_selectedDay]['api']!;
+    final data = await _hodService.getTimetable(day: dayApi);
+
+    if (mounted) {
+      setState(() {
+        _slots = data ?? [];
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -136,15 +103,47 @@ class _TimetableScreenState extends State<TimetableScreen> {
 
           // ── Schedule Timeline ──
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              itemCount: _slots.length,
-              itemBuilder: (context, i) {
-                final slot = _slots[i];
-                final isLast = i == _slots.length - 1;
-                return _TimelineSlot(slot: slot, isLast: isLast);
-              },
-            ),
+            child: _isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(color: Color(0xFF4DB6FF)),
+                  )
+                : _slots.isEmpty
+                ? const Center(
+                    child: Text(
+                      'No classes scheduled for this day.',
+                      style: TextStyle(color: Colors.white54, fontSize: 16),
+                    ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                    itemCount: _slots.length,
+                    itemBuilder: (context, i) {
+                      final slot = _slots[i];
+                      final isLast = i == _slots.length - 1;
+
+                      // Mock/derive visual fields not in backend yet
+                      final uiData = {
+                        'time': slot['start_time'],
+                        'title': slot['subject_name'] ?? 'Unknown',
+                        'badge': 'LECTURE', // Default
+                        'badgeColor': const Color(0xFF1D2230),
+                        'badgeBorder': const Color(0xFF2A3450),
+                        'badgeTextColor': const Color(0xFF8899BB),
+                        'teacher':
+                            'Department Faculty', // Placeholder until staff-subject mapping is clearer in this view
+                        'location': slot['room'] ?? 'TBD',
+                        'locationIcon': Icons.location_on_outlined,
+                        'isCurrent':
+                            false, // Logic to check current time could be added
+                        'attendance': null,
+                      };
+
+                      return _TimelineSlot(slot: uiData, isLast: isLast);
+                    },
+                  ),
           ),
         ],
       ),
@@ -164,7 +163,12 @@ class _TimetableScreenState extends State<TimetableScreen> {
           final bool active = i == _selectedDay;
           final day = _days[i];
           return GestureDetector(
-            onTap: () => setState(() => _selectedDay = i),
+            onTap: () {
+              if (_selectedDay != i) {
+                setState(() => _selectedDay = i);
+                _loadTimetable();
+              }
+            },
             child: Container(
               width: 62,
               margin: const EdgeInsets.only(right: 10),

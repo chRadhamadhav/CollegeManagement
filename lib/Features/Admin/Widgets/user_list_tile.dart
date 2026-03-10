@@ -1,3 +1,4 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:vidhya_sethu/Features/Admin/Models/user_model.dart';
 import 'package:flutter/material.dart';
 
@@ -40,7 +41,7 @@ class UserListTile extends StatelessWidget {
                   image: user.isImage
                       ? DecorationImage(
                           image: NetworkImage(
-                            'http://127.0.0.1:8000${user.avatarUrl}',
+                            '${(dotenv.env['API_BASE_URL'] ?? 'http://10.0.2.2:8000').replaceAll('/api/v1', '')}${user.avatarUrl}',
                           ),
                           fit: BoxFit.cover,
                         )

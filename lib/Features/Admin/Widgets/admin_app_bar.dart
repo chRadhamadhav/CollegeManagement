@@ -2,6 +2,7 @@ import 'package:vidhya_sethu/Features/Admin/Screens/admin_profile.dart';
 import 'package:vidhya_sethu/Global/theme_controller.dart';
 import 'package:vidhya_sethu/Services/user_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AdminAppBar extends StatefulWidget implements PreferredSizeWidget {
   final String title;
@@ -21,12 +22,14 @@ class AdminAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _AdminAppBarState extends State<AdminAppBar> {
+  late final String _baseUrl;
   late Future<Map<String, dynamic>?> _userProfileFuture;
-  final String _baseUrl = 'http://127.0.0.1:8000';
 
   @override
   void initState() {
     super.initState();
+    _baseUrl = (dotenv.env['API_BASE_URL'] ?? 'http://10.0.2.2:8000')
+        .replaceAll('/api/v1', '');
     _userProfileFuture = UserService().fetchUserProfile();
   }
 

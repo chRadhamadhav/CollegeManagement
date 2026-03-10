@@ -4,6 +4,8 @@ class Assignment {
   final String description;
   final DateTime dueDate;
   final String course;
+  final String subjectId;
+  final int maxMarks;
   final DateTime createdAt;
 
   Assignment({
@@ -12,6 +14,8 @@ class Assignment {
     required this.description,
     required this.dueDate,
     required this.course,
+    required this.subjectId,
+    this.maxMarks = 100,
     required this.createdAt,
   });
 }

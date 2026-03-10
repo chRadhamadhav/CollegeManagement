@@ -122,6 +122,8 @@ class _ExamDashboardState extends State<ExamDashboard> {
     final nameController = TextEditingController();
     final maxMarksController = TextEditingController(text: '100');
     final passMarksController = TextEditingController(text: '35');
+    final timeController = TextEditingController(text: '10:00 AM - 01:00 PM');
+    final locationController = TextEditingController(text: 'Main Hall / TBA');
 
     // Fetch subjects before showing dialog or inside it.
     // Let's show a loading dialog first
@@ -150,8 +152,8 @@ class _ExamDashboardState extends State<ExamDashboard> {
 
     await showDialog(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) {
+      builder: (formContext) => StatefulBuilder(
+        builder: (stateContext, setState) {
           return AlertDialog(
             title: const Text('Create New Exam'),
             content: SingleChildScrollView(
@@ -211,19 +213,37 @@ class _ExamDashboardState extends State<ExamDashboard> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: timeController,
+                    decoration: const InputDecoration(
+                      labelText: 'Exam Time',
+                      hintText: 'e.g. 10:00 AM - 01:00 PM',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: locationController,
+                    decoration: const InputDecoration(
+                      labelText: 'Location',
+                      hintText: 'e.g. Room 101 or Lab 1',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
                 ],
               ),
             ),
             actions: [
               TextButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () => Navigator.pop(formContext),
                 child: const Text('Cancel'),
               ),
               FilledButton(
                 onPressed: () async {
                   if (nameController.text.isNotEmpty &&
                       selectedSubject != null) {
-                    Navigator.pop(context); // close dialog
+                    Navigator.pop(formContext); // close dialog
 
                     // Show loading
                     showDialog(
@@ -244,9 +264,11 @@ class _ExamDashboardState extends State<ExamDashboard> {
                       examDate: DateTime.now(),
                       maxMarks: max,
                       passingMarks: pass,
+                      examTime: timeController.text,
+                      location: locationController.text,
                     );
 
-                    if (!mounted) return;
+                    if (!context.mounted) return;
                     Navigator.pop(context); // hide loading
 
                     if (success) {

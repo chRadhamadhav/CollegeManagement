@@ -3,20 +3,21 @@ import 'package:vidhya_sethu/Features/Staff/Models/exam_mark.dart';
 import 'package:vidhya_sethu/Features/Staff/Models/student.dart';
 import 'package:vidhya_sethu/Features/Staff/Models/subject.dart';
 import 'package:vidhya_sethu/core/api/api_client.dart';
+import 'package:vidhya_sethu/core/logger/app_logger.dart';
 
 class ExamService {
   final ApiClient _apiClient = ApiClient();
 
   Future<List<Exam>> getExams() async {
     try {
-      final response = await _apiClient.dio.get('/staff/exams');
+      final response = await _apiClient.dio.get('staff/exams/');
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data;
         return data.map((e) => Exam.fromJson(e)).toList();
       }
       return [];
     } catch (e) {
-      print('Error fetching exams: $e');
+      AppLogger.error('Error fetching exams', e);
       return [];
     }
   }
@@ -28,46 +29,52 @@ class ExamService {
     required DateTime examDate,
     required double maxMarks,
     required double passingMarks,
+    String examTime = '10:00 AM - 01:00 PM',
+    String location = 'TBA',
   }) async {
     try {
+      AppLogger.info('Adding exam: $name for subject: $subjectId');
       final response = await _apiClient.dio.post(
-        '/staff/exams',
+        'staff/exams/',
         data: {
           'name': name,
           'subject_id': subjectId,
           'department_id': departmentId,
-          'exam_date': examDate.toIso8601String(),
+          'exam_date': examDate.toIso8601String().split('T')[0],
+          'exam_time': examTime,
+          'location': location,
           'max_marks': maxMarks,
           'passing_marks': passingMarks,
         },
       );
+      AppLogger.info('addExam response: ${response.statusCode}');
       return response.statusCode == 201;
     } catch (e) {
-      print('Error adding exam: $e');
+      AppLogger.error('Error adding exam', e);
       return false;
     }
   }
 
   Future<bool> deleteExam(String examId) async {
     try {
-      final response = await _apiClient.dio.delete('/staff/exams/$examId');
+      final response = await _apiClient.dio.delete('staff/exams/$examId/');
       return response.statusCode == 204;
     } catch (e) {
-      print('Error deleting exam: $e');
+      AppLogger.error('Error deleting exam: $examId', e);
       return false;
     }
   }
 
   Future<List<Subject>> getSubjects() async {
     try {
-      final response = await _apiClient.dio.get('/staff/subjects');
+      final response = await _apiClient.dio.get('staff/subjects/');
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data;
         return data.map((e) => Subject.fromJson(e)).toList();
       }
       return [];
     } catch (e) {
-      print('Error fetching subjects: $e');
+      AppLogger.error('Error fetching subjects', e);
       return [];
     }
   }
@@ -75,7 +82,7 @@ class ExamService {
   Future<List<Student>> getStudents(String subjectId) async {
     try {
       final response = await _apiClient.dio.get(
-        '/staff/subjects/$subjectId/students',
+        'staff/subjects/$subjectId/students/',
       );
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data;
@@ -87,29 +94,27 @@ class ExamService {
             studentId: e['roll_number'] ?? '',
             course: e['course'] ?? '',
             name: user['full_name'] ?? 'Unknown',
-            imageUrl:
-                user['avatar_url'] ??
-                'assets/profile_placeholder.png', // Or fetch from user
+            imageUrl: user['avatar_url'] ?? '',
           );
         }).toList();
       }
       return [];
     } catch (e) {
-      print('Error fetching students: $e');
+      AppLogger.error('Error fetching students for subject: $subjectId', e);
       return [];
     }
   }
 
   Future<List<ExamMark>> getMarks(String examId) async {
     try {
-      final response = await _apiClient.dio.get('/staff/exams/$examId/marks');
+      final response = await _apiClient.dio.get('staff/exams/$examId/marks/');
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data;
         return data.map((e) => ExamMark.fromJson(e)).toList();
       }
       return [];
     } catch (e) {
-      print('Error fetching marks: $e');
+      AppLogger.error('Error fetching marks for exam: $examId', e);
       return [];
     }
   }
@@ -117,7 +122,7 @@ class ExamService {
   Future<bool> saveMarksBulk(String examId, List<ExamMark> marks) async {
     try {
       final response = await _apiClient.dio.post(
-        '/staff/exams/$examId/marks',
+        'staff/exams/$examId/marks/',
         data: {
           'exam_id': examId,
           'marks': marks
@@ -133,7 +138,7 @@ class ExamService {
       );
       return response.statusCode == 204;
     } catch (e) {
-      print('Error saving bulk marks: $e');
+      AppLogger.error('Error saving bulk marks for exam: $examId', e);
       return false;
     }
   }

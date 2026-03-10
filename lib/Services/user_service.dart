@@ -3,13 +3,14 @@ import 'package:vidhya_sethu/core/api/api_client.dart';
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import '../core/logger/app_logger.dart';
 
 class UserService {
   final ApiClient _apiClient = ApiClient();
 
   Future<List<User>> getUsers() async {
     try {
-      final response = await _apiClient.dio.get('/admin/users');
+      final response = await _apiClient.dio.get('admin/users');
       if (response.statusCode == 200) {
         final List<dynamic> usersJson = response.data['users'] ?? [];
         return usersJson.map((json) {
@@ -38,18 +39,31 @@ class UserService {
       }
       return [];
     } catch (e) {
-      print('Error fetching users: $e');
+      AppLogger.error('Error fetching users', e);
       return [];
     }
   }
 
-  Future<bool> addUser(Map<String, dynamic> data) async {
+  /// Adds a new user. Returns null on success, or an error message on failure.
+  Future<String?> addUser(Map<String, dynamic> data) async {
     try {
-      final response = await _apiClient.dio.post('/admin/users', data: data);
-      return response.statusCode == 201;
+      final response = await _apiClient.dio.post('admin/users', data: data);
+      if (response.statusCode == 201) {
+        return null;
+      }
+      return 'Unexpected response: ${response.statusCode}';
     } catch (e) {
-      print('Error adding user: $e');
-      return false;
+      AppLogger.error('Error adding user', e);
+      if (e is DioException) {
+        final data = e.response?.data;
+        if (data is Map && data.containsKey('message')) {
+          return data['message'];
+        }
+        if (e.response?.statusCode == 409) {
+          return 'User with this email already exists.';
+        }
+      }
+      return 'Failed to create user. Please try again.';
     }
   }
 
@@ -60,24 +74,46 @@ class UserService {
   }
 
   Future<bool> deleteUser(String userId) async {
+    if (userId.isEmpty) {
+      AppLogger.error('Error: Attempted to delete user with empty ID', null);
+      return false;
+    }
     try {
-      final response = await _apiClient.dio.delete('/admin/users/$userId');
-      return response.statusCode == 204;
+      final path = 'admin/users/$userId';
+      AppLogger.info('Attempting to delete user: $userId at path: $path');
+      final response = await _apiClient.dio.delete(path);
+
+      if (response.statusCode == 204) {
+        return true;
+      } else {
+        AppLogger.error(
+          'Unexpected status code ${response.statusCode} while deleting user: ${response.data}',
+          null,
+        );
+        return false;
+      }
     } catch (e) {
-      print('Error deleting user: $e');
+      if (e is DioException) {
+        AppLogger.error(
+          'Dio error deleting user: ${e.response?.statusCode} - ${e.response?.data}',
+          e,
+        );
+      } else {
+        AppLogger.error('Unexpected error deleting user: $userId', e);
+      }
       return false;
     }
   }
 
   Future<Map<String, dynamic>?> getDashboardStats() async {
     try {
-      final response = await _apiClient.dio.get('/admin/statistics');
+      final response = await _apiClient.dio.get('admin/statistics');
       if (response.statusCode == 200) {
         return response.data as Map<String, dynamic>;
       }
       return null;
     } catch (e) {
-      print('Error fetching dashboard stats: $e');
+      AppLogger.error('Error fetching dashboard stats', e);
       return null;
     }
   }
@@ -87,35 +123,40 @@ class UserService {
       // Create a fresh dio instance to bypass the api client's prefix /api/v1
       // and directly hit /health
       final dio = _apiClient.dio;
-      final baseUrl = dio.options.baseUrl.replaceAll('/api/v1', '');
+      var baseUrl = dio.options.baseUrl.replaceAll('/api/v1', '');
+
+      // Remove trailing slash if it exists to avoid //health
+      if (baseUrl.endsWith('/')) {
+        baseUrl = baseUrl.substring(0, baseUrl.length - 1);
+      }
 
       final response = await dio.get('$baseUrl/health');
       return response.statusCode == 200 && response.data['status'] == 'ok';
     } catch (e) {
-      print('Health check error: $e');
+      AppLogger.error('Health check error', e);
       return false;
     }
   }
 
   Future<Map<String, dynamic>?> fetchUserProfile() async {
     try {
-      final response = await _apiClient.dio.get('/auth/me');
+      final response = await _apiClient.dio.get('auth/me');
       if (response.statusCode == 200) {
         return response.data as Map<String, dynamic>;
       }
       return null;
     } catch (e) {
-      print('Error fetching user profile: $e');
+      AppLogger.error('Error fetching user profile', e);
       return null;
     }
   }
 
   Future<bool> updateUserProfile(Map<String, dynamic> data) async {
     try {
-      final response = await _apiClient.dio.patch('/auth/me', data: data);
+      final response = await _apiClient.dio.patch('auth/me', data: data);
       return response.statusCode == 200;
     } catch (e) {
-      print('Error updating user profile: $e');
+      AppLogger.error('Error updating user profile', e);
       return false;
     }
   }
@@ -127,13 +168,13 @@ class UserService {
       });
 
       final response = await _apiClient.dio.post(
-        '/auth/me/avatar',
+        'auth/me/avatar',
         data: formData,
       );
 
       return response.statusCode == 200;
     } catch (e) {
-      print('Error uploading profile image: $e');
+      AppLogger.error('Error uploading profile image', e);
       return false;
     }
   }
@@ -145,13 +186,13 @@ class UserService {
       });
 
       final response = await _apiClient.dio.post(
-        '/admin/users/bulk',
+        'admin/users/bulk',
         data: formData,
       );
 
       return response.statusCode == 201;
     } catch (e) {
-      print('Error bulk uploading users: $e');
+      AppLogger.error('Error bulk uploading users', e);
       return false;
     }
   }

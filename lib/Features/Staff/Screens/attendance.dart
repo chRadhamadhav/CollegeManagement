@@ -84,7 +84,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
         .map(
           (s) => {
             'student_id': s.id,
-            'status': s.status.toString().split('.').last,
+            'status': s.status.toString().split('.').last.toUpperCase(),
           },
         )
         .toList();

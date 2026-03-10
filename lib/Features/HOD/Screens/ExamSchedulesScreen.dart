@@ -16,6 +16,7 @@ class _ExamSchedulesScreenState extends State<ExamSchedulesScreen> {
   bool _isLoading = true;
   List<Map<String, dynamic>> _exams = [];
   List<Map<String, dynamic>> _faculties = [];
+  List<Map<String, dynamic>> _subjects = [];
 
   @override
   void initState() {
@@ -27,11 +28,13 @@ class _ExamSchedulesScreenState extends State<ExamSchedulesScreen> {
     setState(() => _isLoading = true);
     final exams = await _hodService.getExams();
     final facultyList = await _hodService.getFaculty();
+    final subjectList = await _hodService.getSubjects();
 
     if (mounted) {
       setState(() {
         _exams = exams ?? [];
         _faculties = facultyList ?? [];
+        _subjects = subjectList ?? [];
         _isLoading = false;
       });
     }
@@ -102,112 +105,293 @@ class _ExamSchedulesScreenState extends State<ExamSchedulesScreen> {
   }
 
   void _showAddExamDialog() {
-    final titleCtrl = TextEditingController();
-    final codeCtrl = TextEditingController();
-    final dateCtrl = TextEditingController();
-    final timeCtrl = TextEditingController();
+    String? selectedSubjectId;
+    String selectedType = 'INTERNAL_1';
+    DateTime selectedDate = DateTime.now();
+    TimeOfDay selectedTime = const TimeOfDay(hour: 10, minute: 0);
     final locationCtrl = TextEditingController();
+
+    if (_subjects.isNotEmpty) {
+      selectedSubjectId = _subjects[0]['id'];
+    }
 
     showDialog(
       context: context,
-      builder: (context) => Dialog(
-        backgroundColor: const Color(0xFF151B2B),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Add New Exam',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => Dialog(
+          backgroundColor: const Color(0xFF151B2B),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Add New Exam',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                _DialogField(
-                  label: 'Exam Title',
-                  controller: titleCtrl,
-                  hint: 'e.g. Advanced Algorithms',
-                ),
-                const SizedBox(height: 12),
-                _DialogField(
-                  label: 'Course Code',
-                  controller: codeCtrl,
-                  hint: 'e.g. CS402',
-                ),
-                const SizedBox(height: 12),
-                _DialogField(
-                  label: 'Date',
-                  controller: dateCtrl,
-                  hint: 'e.g. Oct 24, 2023',
-                ),
-                const SizedBox(height: 12),
-                _DialogField(
-                  label: 'Time',
-                  controller: timeCtrl,
-                  hint: 'e.g. 10:00 AM - 01:00 PM',
-                ),
-                const SizedBox(height: 12),
-                _DialogField(
-                  label: 'Location',
-                  controller: locationCtrl,
-                  hint: 'e.g. Lab 3, Block B',
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text(
-                          'Cancel',
-                          style: TextStyle(color: Colors.white54),
-                        ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'SUBJECT',
+                    style: TextStyle(
+                      color: Colors.white54,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0D121F),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFF1E2A40)),
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        value: selectedSubjectId,
+                        isExpanded: true,
+                        dropdownColor: const Color(0xFF151B2B),
+                        style: const TextStyle(color: Colors.white),
+                        items: _subjects
+                            .map(
+                              (s) => DropdownMenuItem(
+                                value: s['id'] as String,
+                                child: Text(s['name'] ?? ''),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (v) =>
+                            setDialogState(() => selectedSubjectId = v),
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF3A7AFF),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                  ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'TYPE',
+                    style: TextStyle(
+                      color: Colors.white54,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0D121F),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFF1E2A40)),
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        value: selectedType,
+                        isExpanded: true,
+                        dropdownColor: const Color(0xFF151B2B),
+                        style: const TextStyle(color: Colors.white),
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'INTERNAL_1',
+                            child: Text('Internal 1'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'INTERNAL_2',
+                            child: Text('Internal 2'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'INTERNAL_3',
+                            child: Text('Internal 3'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'EXTERNAL',
+                            child: Text('External'),
+                          ),
+                        ],
+                        onChanged: (v) =>
+                            setDialogState(() => selectedType = v!),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'DATE',
+                              style: TextStyle(
+                                color: Colors.white54,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            InkWell(
+                              onTap: () async {
+                                final picked = await showDatePicker(
+                                  context: context,
+                                  initialDate: selectedDate,
+                                  firstDate: DateTime.now(),
+                                  lastDate: DateTime.now().add(
+                                    const Duration(days: 365),
+                                  ),
+                                );
+                                if (picked != null)
+                                  setDialogState(() => selectedDate = picked);
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 12,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF0D121F),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: const Color(0xFF1E2A40),
+                                  ),
+                                ),
+                                child: Text(
+                                  DateFormat('yyyy-MM-dd').format(selectedDate),
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'TIME',
+                              style: TextStyle(
+                                color: Colors.white54,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            InkWell(
+                              onTap: () async {
+                                final picked = await showTimePicker(
+                                  context: context,
+                                  initialTime: selectedTime,
+                                );
+                                if (picked != null)
+                                  setDialogState(() => selectedTime = picked);
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 12,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF0D121F),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: const Color(0xFF1E2A40),
+                                  ),
+                                ),
+                                child: Text(
+                                  '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}',
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  _DialogField(
+                    label: 'Location',
+                    controller: locationCtrl,
+                    hint: 'e.g. Lab 3, Block B',
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextButton(
+                          onPressed: () => Navigator.pop(dialogContext),
+                          child: const Text(
+                            'Cancel',
+                            style: TextStyle(color: Colors.white54),
                           ),
                         ),
-                        onPressed: () {
-                          if (titleCtrl.text.isNotEmpty) {
-                            setState(() {
-                              _exams.insert(0, {
-                                'title': titleCtrl.text,
-                                'subject_code': codeCtrl.text,
-                                'badge': 'NEW',
-                                'badgeColor': const Color(0xFF1D2230),
-                                'badgeTextColor': const Color(0xFF4DB6FF),
-                                'exam_date': dateCtrl.text,
-                                'exam_time': timeCtrl.text,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF3A7AFF),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          onPressed: () async {
+                            if (selectedSubjectId != null) {
+                              final data = {
+                                'name': selectedType,
+                                'subject_id': selectedSubjectId,
+                                'exam_date': DateFormat(
+                                  'yyyy-MM-dd',
+                                ).format(selectedDate),
+                                'exam_time':
+                                    '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}:00',
                                 'location': locationCtrl.text,
-                                'invigilator_name': null,
-                                'id':
-                                    'temp_id', // Mock for now until POST exam is wired
-                              });
-                            });
-                            Navigator.pop(context);
-                          }
-                        },
-                        child: const Text(
-                          'Add Exam',
-                          style: TextStyle(color: Colors.white),
+                              };
+
+                              Navigator.pop(dialogContext);
+                              setState(() => _isLoading = true);
+                              final res = await _hodService.createExam(data);
+                              if (res != null) {
+                                await _loadData();
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'Exam schedule created successfully!',
+                                      ),
+                                    ),
+                                  );
+                                }
+                              } else {
+                                setState(() => _isLoading = false);
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Failed to create exam.'),
+                                    ),
+                                  );
+                                }
+                              }
+                            }
+                          },
+                          child: const Text(
+                            'Add Exam',
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -326,7 +510,7 @@ class _ExamSchedulesScreenState extends State<ExamSchedulesScreen> {
                   ),
                 ),
                 Text(
-                  'October 2023',
+                  DateFormat('MMMM yyyy').format(DateTime.now()),
                   style: TextStyle(
                     color: Colors.blue[400],
                     fontSize: 12,

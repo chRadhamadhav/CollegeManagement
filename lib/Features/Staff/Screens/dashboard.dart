@@ -142,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         icon: Icons.assignment,
                         title: "Assignments",
                         subtitle:
-                            "${_dashboardData?['total_assignments'] ?? 0} Total",
+                            "${_dashboardData?['total_assignments'] ?? 0} Total • ${_dashboardData?['pending_assignments'] ?? 0} Pending",
                         onTap: () {
                           Navigator.push(
                             context,

@@ -1,5 +1,6 @@
 import 'package:vidhya_sethu/Features/Student/Services/student_service.dart';
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
 
 /// Displays the student's pending and submitted assignments.
 ///
@@ -284,11 +285,30 @@ class _UploadAssignmentPageState extends State<UploadAssignmentPage>
               const Spacer(),
               if (isPending)
                 ElevatedButton.icon(
-                  onPressed: () {
-                    // TODO: Implement file upload via /student/assignments/{id}/submit
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('File upload coming soon')),
-                    );
+                  onPressed: () async {
+                    // Implement file upload via /student/assignments/{id}/submit
+                    final result = await FilePicker.platform.pickFiles();
+                    if (result != null && result.files.single.path != null) {
+                      final success = await StudentService().submitAssignment(
+                        assignmentId: item['id'],
+                        filePath: result.files.single.path!,
+                        fileName: result.files.single.name,
+                      );
+                      if (success) {
+                        _loadAssignments();
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Upload successful')),
+                          );
+                        }
+                      } else {
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Upload failed')),
+                          );
+                        }
+                      }
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2F80ED),

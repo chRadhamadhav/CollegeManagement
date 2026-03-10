@@ -2,6 +2,8 @@ import 'package:vidhya_sethu/Features/Staff/Models/assignment.dart';
 import 'package:flutter/material.dart';
 import '../../Services/assignment_service.dart';
 import '../../Services/timetable_service.dart';
+import '../../Services/attendance_service.dart';
+import '../../Models/subject.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
@@ -19,20 +21,25 @@ class _CreateAssignmentScreenState extends State<CreateAssignmentScreen> {
   DateTime _dueDate = DateTime.now().add(const Duration(days: 7));
 
   String? _selectedCourse;
+  String? _selectedSubjectId;
   List<String> _availableCourses = [];
+  List<Subject> _availableSubjects = [];
 
   final TimetableService _timetableService = TimetableService();
+  final AttendanceService _attendanceService = AttendanceService();
 
   @override
   void initState() {
     super.initState();
-    _loadCourses();
+    _loadInitialData();
   }
 
-  Future<void> _loadCourses() async {
+  Future<void> _loadInitialData() async {
     final courses = await _timetableService.fetchCourses();
+    final subjects = await _attendanceService.getSubjects();
     setState(() {
       _availableCourses = courses;
+      _availableSubjects = subjects;
     });
   }
 
@@ -52,11 +59,14 @@ class _CreateAssignmentScreenState extends State<CreateAssignmentScreen> {
 
   void _saveAssignment() async {
     if (_formKey.currentState!.validate()) {
+      if (_selectedSubjectId == null || _selectedCourse == null) return;
+
       final newAssignment = Assignment(
         id: const Uuid().v4(),
         title: _titleController.text,
         description: _descController.text,
         course: _selectedCourse!,
+        subjectId: _selectedSubjectId!,
         dueDate: _dueDate,
         createdAt: DateTime.now(),
       );
@@ -111,8 +121,29 @@ class _CreateAssignmentScreenState extends State<CreateAssignmentScreen> {
               ),
             ),
             const SizedBox(height: 16),
+            // Subject Dropdown
             DropdownButtonFormField<String>(
-              initialValue: _selectedCourse,
+              value: _selectedSubjectId,
+              decoration: const InputDecoration(
+                labelText: 'Select Subject',
+                border: OutlineInputBorder(),
+              ),
+              items: _availableSubjects.map((subject) {
+                return DropdownMenuItem<String>(
+                  value: subject.id,
+                  child: Text(subject.name),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedSubjectId = newValue;
+                });
+              },
+              validator: (val) => val == null ? 'Required' : null,
+            ),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              value: _selectedCourse,
               decoration: const InputDecoration(
                 labelText: 'Target Course / Group',
                 border: OutlineInputBorder(),

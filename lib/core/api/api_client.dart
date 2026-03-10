@@ -9,7 +9,10 @@ class ApiClient {
   factory ApiClient() => _instance;
 
   ApiClient._internal() {
-    final baseUrl = dotenv.env['API_BASE_URL'] ?? 'http://10.0.2.2:8000/api/v1';
+    var baseUrl = dotenv.env['API_BASE_URL'] ?? 'http://10.0.2.2:8000/api/v1';
+    if (!baseUrl.endsWith('/')) {
+      baseUrl = '$baseUrl/';
+    }
 
     dio = Dio(
       BaseOptions(
@@ -36,8 +39,8 @@ class _AuthInterceptor extends Interceptor {
     RequestInterceptorHandler handler,
   ) async {
     // Exclude /auth/login and /auth/refresh from requiring access tokens
-    if (!options.path.contains('/auth/login') &&
-        !options.path.contains('/auth/refresh')) {
+    if (!options.path.contains('/auth/login/') &&
+        !options.path.contains('/auth/refresh/')) {
       final token = await SecureStorage.getAccessToken();
       if (token != null) {
         options.headers['Authorization'] = 'Bearer $token';
@@ -49,8 +52,8 @@ class _AuthInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     if (err.response?.statusCode == 401 &&
-        !err.requestOptions.path.contains('/auth/login') &&
-        !err.requestOptions.path.contains('/auth/refresh')) {
+        !err.requestOptions.path.contains('/auth/login/') &&
+        !err.requestOptions.path.contains('/auth/refresh/')) {
       // Token is invalid/expired. Try to refresh it.
       if (!_isRefreshing) {
         _isRefreshing = true;
@@ -61,7 +64,7 @@ class _AuthInterceptor extends Interceptor {
             // Making a direct request bypassing interceptors to avoid loops
             final refreshDio = Dio(BaseOptions(baseUrl: _dio.options.baseUrl));
             final response = await refreshDio.post(
-              '/auth/refresh',
+              'auth/refresh/',
               data: {'refresh_token': refreshToken},
             );
 

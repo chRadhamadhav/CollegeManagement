@@ -1,13 +1,14 @@
 import '../../../core/api/api_client.dart';
 import '../Models/student.dart';
 import '../Models/subject.dart';
+import '../../../core/logger/app_logger.dart';
 
 class AttendanceService {
   final ApiClient _apiClient = ApiClient();
 
   Future<List<Subject>> getSubjects() async {
     try {
-      final response = await _apiClient.dio.get('/staff/subjects');
+      final response = await _apiClient.dio.get('staff/subjects/');
       if (response.statusCode == 200) {
         return (response.data as List)
             .map((json) => Subject.fromJson(json))
@@ -15,7 +16,7 @@ class AttendanceService {
       }
       return [];
     } catch (e) {
-      print('Error fetching subjects: $e');
+      AppLogger.error('Error fetching subjects', e);
       return [];
     }
   }
@@ -23,7 +24,7 @@ class AttendanceService {
   Future<List<Student>> getStudents(String subjectId) async {
     try {
       final response = await _apiClient.dio.get(
-        '/staff/subjects/$subjectId/students',
+        'staff/subjects/$subjectId/students/',
       );
       if (response.statusCode == 200) {
         return (response.data as List).map((json) {
@@ -33,13 +34,13 @@ class AttendanceService {
             studentId: json['roll_number'] ?? '',
             course: json['course'] ?? '',
             name: user['full_name'] ?? 'Unknown',
-            imageUrl: user['avatar_url'] ?? 'assets/profile_placeholder.png',
+            imageUrl: user['avatar_url'] ?? '',
           );
         }).toList();
       }
       return [];
     } catch (e) {
-      print('Error fetching students: $e');
+      AppLogger.error('Error fetching students for subject: $subjectId', e);
       return [];
     }
   }
@@ -57,12 +58,12 @@ class AttendanceService {
       };
 
       final response = await _apiClient.dio.post(
-        '/staff/attendance',
+        'staff/attendance/',
         data: payload,
       );
       return response.statusCode == 204 || response.statusCode == 200;
     } catch (e) {
-      print('Error submitting attendance: $e');
+      AppLogger.error('Error submitting attendance', e);
       return false;
     }
   }

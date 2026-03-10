@@ -7,6 +7,7 @@ import 'package:vidhya_sethu/Services/user_service.dart';
 import 'package:vidhya_sethu/Services/auth_service.dart';
 import 'package:vidhya_sethu/Global/login.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// A custom drawer widget for the Admin dashboard.
 /// It provides navigation links to various administrative features.
@@ -19,13 +20,14 @@ class AdminDrawer extends StatefulWidget {
 }
 
 class _AdminDrawerState extends State<AdminDrawer> {
+  late final String _baseUrl;
   late Future<Map<String, dynamic>?> _userProfileFuture;
-  final String _baseUrl =
-      'http://127.0.0.1:8000'; // Define backend base URL for resolving relative image paths
 
   @override
   void initState() {
     super.initState();
+    _baseUrl = (dotenv.env['API_BASE_URL'] ?? 'http://10.0.2.2:8000')
+        .replaceAll('/api/v1', '');
     _userProfileFuture = UserService().fetchUserProfile();
   }
 

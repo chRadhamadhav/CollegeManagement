@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import '../../../core/api/api_client.dart';
+import '../../../core/logger/app_logger.dart';
 
 class StaffService {
   static final StaffService _instance = StaffService._internal();
@@ -14,12 +15,12 @@ class StaffService {
   /// Fetches the profile details of the currently logged-in staff member.
   Future<Map<String, dynamic>?> getStaffProfile() async {
     try {
-      final response = await _dio.get('/staff/profile');
+      final response = await _dio.get('staff/profile/');
       if (response.statusCode == 200) {
         return response.data as Map<String, dynamic>;
       }
     } catch (e) {
-      print('getStaffProfile ERROR: $e');
+      AppLogger.error('getStaffProfile ERROR', e);
       // Return null on failure
     }
     return null;
@@ -28,11 +29,12 @@ class StaffService {
   /// Fetches the dashboard statistics of the currently logged-in staff member.
   Future<Map<String, dynamic>?> getStaffDashboard() async {
     try {
-      final response = await _dio.get('/staff/dashboard');
+      final response = await _dio.get('staff/dashboard/');
       if (response.statusCode == 200) {
         return response.data as Map<String, dynamic>;
       }
     } catch (e) {
+      AppLogger.error('getStaffDashboard ERROR', e);
       // Return null on failure
     }
     return null;
