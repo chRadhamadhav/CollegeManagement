@@ -1,0 +1,42 @@
+﻿Analyzing college_management...                                 
+
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Features\Admin\Screens\admin_profile.dart:192:39 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Features\Admin\Screens\admin_profile.dart:212:46 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Features\Admin\Screens\admin_profile.dart:242:49 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Features\Admin\Screens\admin_profile.dart:379:47 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Features\Admin\Screens\admin_profile.dart:386:53 - deprecated_member_use
+   info - The file name 'AnnouncementsScreen.dart' isn't a lower_case_with_underscores identifier - lib\Features\HOD\Screens\AnnouncementsScreen.dart:1:1 - file_names
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\Features\HOD\Screens\AnnouncementsScreen.dart:131:54 - use_build_context_synchronously
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Features\HOD\Screens\AnnouncementsScreen.dart:428:41 - deprecated_member_use
+   info - The file name 'ExamSchedulesScreen.dart' isn't a lower_case_with_underscores identifier - lib\Features\HOD\Screens\ExamSchedulesScreen.dart:1:1 - file_names
+   info - Statements in an if should be enclosed in a block - lib\Features\HOD\Screens\ExamSchedulesScreen.dart:250:35 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\Features\HOD\Screens\ExamSchedulesScreen.dart:294:35 - curly_braces_in_flow_control_structures
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\Features\HOD\Screens\ExamSchedulesScreen.dart:365:56 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\Features\HOD\Screens\ExamSchedulesScreen.dart:376:56 - use_build_context_synchronously
+   info - The file name 'HODDashboard.dart' isn't a lower_case_with_underscores identifier - lib\Features\HOD\Screens\HODDashboard.dart:1:1 - file_names
+   info - The file name 'HODProfileScreen.dart' isn't a lower_case_with_underscores identifier - lib\Features\HOD\Screens\HODProfileScreen.dart:1:1 - file_names
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Features\HOD\Screens\HODProfileScreen.dart:536:58 - deprecated_member_use
+   info - The file name 'OnDutyListScreen.dart' isn't a lower_case_with_underscores identifier - lib\Features\HOD\Screens\OnDutyListScreen.dart:1:1 - file_names
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Features\HOD\Screens\OnDutyListScreen.dart:201:58 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Features\HOD\Screens\OnDutyListScreen.dart:308:64 - deprecated_member_use
+   info - The file name 'PostResultsScreen.dart' isn't a lower_case_with_underscores identifier - lib\Features\HOD\Screens\PostResultsScreen.dart:1:1 - file_names
+   info - The file name 'TimetableScreen.dart' isn't a lower_case_with_underscores identifier - lib\Features\HOD\Screens\TimetableScreen.dart:1:1 - file_names
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Features\HOD\Screens\TimetableScreen.dart:289:60 - deprecated_member_use
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\Features\Staff\Screens\Assignments\create_assignment_screen.dart:126:15 - deprecated_member_use
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\Features\Staff\Screens\Assignments\create_assignment_screen.dart:146:15 - deprecated_member_use
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\Features\Staff\Screens\Exams\exam_dashboard.dart:84:58 - use_build_context_synchronously
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\Features\Staff\Screens\Exams\exam_dashboard.dart:177:21 - deprecated_member_use
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\Features\Staff\Screens\Exams\exam_dashboard.dart:272:35 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\Features\Staff\Screens\Exams\exam_dashboard.dart:277:44 - use_build_context_synchronously
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\Features\Staff\Screens\dashboard.dart:330:19 - deprecated_member_use
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\Features\Staff\Screens\dashboard.dart:365:21 - deprecated_member_use
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\Features\Staff\Screens\materials_screen.dart:94:23 - deprecated_member_use
+   info - Statements in an if should be enclosed in a block - lib\Features\Staff\Screens\materials_screen.dart:162:27 - curly_braces_in_flow_control_structures
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\Features\Staff\Screens\materials_screen.dart:298:33 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\Features\Staff\Screens\materials_screen.dart:302:42 - use_build_context_synchronously
+   info - The file name 'test copy.dart' isn't a lower_case_with_underscores identifier - lib\Features\Student\Models\test copy.dart:1:1 - file_names
+   info - Unnecessary use of string interpolation - lib\Features\Student\Screens\result_screen.dart:167:17 - unnecessary_string_interpolations
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\Features\Student\Screens\study_material.dart:326:42 - use_build_context_synchronously
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\Global\login.dart:54:37 - deprecated_member_use
+   info - Unnecessary use of multiple underscores - lib\main.dart:20:31 - unnecessary_underscores
+
